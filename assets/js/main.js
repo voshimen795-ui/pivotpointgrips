@@ -8,6 +8,11 @@
 (function () {
   'use strict';
 
+  // In a classic script, dynamic import() resolves against the DOCUMENT url,
+  // not this file's — './bat3d.js' would look for /bat3d.js. Capture our own
+  // src while currentScript is still set and resolve against that instead.
+  var SELF_SRC = (document.currentScript && document.currentScript.src) || '';
+
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
@@ -196,6 +201,47 @@
           }
         });
       }, { threshold: 0.05 }).observe(heroVideo);
+    }
+  }
+
+  /* --- 3D bat ------------------------------------------------------------
+   * three.js is ~180 kB gzipped, so it is never part of the initial payload:
+   * the module is imported only once the section is close to the viewport,
+   * and only when the device can actually use it. Everything below bails to
+   * the static product photo already in the markup.
+   */
+  var stage3d = document.querySelector('[data-bat3d]');
+
+  if (stage3d) {
+    var capable = (function () {
+      if (reduced) return false;
+      if (navigator.connection && navigator.connection.saveData) return false;
+      if (typeof WebGLRenderingContext === 'undefined') return false;
+      try {
+        var c = document.createElement('canvas');
+        return !!(c.getContext('webgl2') || c.getContext('webgl'));
+      } catch (err) {
+        return false;
+      }
+    })();
+
+    if (capable && 'IntersectionObserver' in window) {
+      var loader = new IntersectionObserver(function (entries) {
+        if (!entries[0].isIntersecting) return;
+        loader.disconnect();
+
+        var url = SELF_SRC
+          ? new URL('bat3d.js', SELF_SRC).href
+          : 'assets/js/bat3d.js';
+
+        import(url)
+          .then(function (mod) { mod.mount(stage3d); })
+          .catch(function () { stage3d.setAttribute('data-failed', 'true'); });
+      }, { rootMargin: '400px 0px' });
+
+      loader.observe(stage3d);
+    } else {
+      stage3d.setAttribute('data-failed', 'true');
     }
   }
 

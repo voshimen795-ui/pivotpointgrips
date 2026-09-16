@@ -1,0 +1,12 @@
+{
+  "name": "pivotpointgrips",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Pivot Point Grips — static site. The only dependency belongs to the checkout function; the site itself has no build step.",
+  "scripts": {
+    "dev": "python3 -m http.server 8000"
+  },
+  "dependencies": {
+    "stripe": "^19.2.0"
+  }
+}

@@ -18,6 +18,7 @@ relative, so it runs from a subdirectory too.
 | `story.html` | Our Story | Founders, why gripping is hard, how PPG differs |
 | `faq.html` | — (footer) | Sizing, compatibility, install, team orders |
 | `contact.html` | — (footer) | Form and direct email |
+| `order-confirmed.html` | — | Where Stripe returns after payment; clears the cart |
 | `design-system.html` | **unlinked** | Internal reference: tokens, type, components, motion |
 
 The home page deliberately carries only what earns its place. Everything it
@@ -34,6 +35,8 @@ assets/js/main.js        ~230 lines, no dependencies
 assets/fonts/            Self-hosted Archivo / Inter / Space Mono (woff2, 284 KB)
 assets/img/              Photography and product shots
 assets/video/            Hero footage — see the note in that folder
+assets/vendor/           three.js (MIT), self-hosted, lazy-loaded
+functions/               Stripe Checkout — the only server-side code
 ```
 
 ## Colour
@@ -65,11 +68,66 @@ in one place and the whole site follows.
   push.
 - **Cards.** Pointer-follow 3D lift, capped at 3°.
 - **Headlines.** Words rise into place on a 55ms stagger.
+- **3D grip.** See below.
 
 All of it stops under `prefers-reduced-motion: reduce`, and pointer effects are
 gated behind `(hover: hover) and (pointer: fine)` so touch devices never pay for
 them. Entrance animations are additionally gated behind a `js` class set in
 `<head>` — with JavaScript off the pages render completely, just without motion.
+
+## The 3D grip
+
+`assets/js/bat3d.js` builds the bat in three.js. There is no model file: a bat
+is a surface of revolution, so the silhouette is a radius-along-length profile
+that gets lathed. The groove count, depth and taper are parameters at the top
+of the file, not baked geometry — change `GROOVES` and it re-renders with a
+different number of ridges.
+
+The camera frames the *grip*, not the whole bat, and the model rotates about
+`PIVOT_Y` (the middle of the grip) so the grip holds the centre while the
+barrel sweeps in and out of shot. Camera distance is derived from the field of
+view, so any container shape frames it identically. The three labels are HTML,
+reprojected from 3D anchors every frame.
+
+three.js is ~180 kB gzipped, so it is **never in the initial payload**. The
+module is imported only when the section is within 400px of the viewport, and
+only when the device passes a check for WebGL, no `prefers-reduced-motion` and
+no `Save-Data`. Everything else falls back to the product photo underneath,
+which is what ships in the markup.
+
+## Cart and payments
+
+**What works now, with no setup:** adding to cart, quantities, removal,
+mix & match discount, the drawer, persistence across reloads and tabs.
+
+**What needs your Stripe account:** taking money. Until then the Checkout
+button shows a message pointing at `info@pivotpointgrips.com` rather than
+failing silently.
+
+To connect it:
+
+1. Create a Stripe account and copy the secret key.
+2. Deploy to Netlify (`netlify.toml` is already configured).
+3. Site settings → Environment variables:
+   `STRIPE_SECRET_KEY = sk_…` and `SITE_URL = https://your-domain.com`.
+4. `npm install` so the function bundles the `stripe` package.
+5. Test with card `4242 4242 4242 4242`, any future expiry and CVC.
+
+For Vercel instead: move `functions/create-checkout-session.js` to
+`api/`, export a default `(req, res)` handler, and change `ENDPOINT` at the top
+of `assets/js/cart.js`.
+
+**Why prices live in two files.** `assets/js/catalog.js` renders the cart;
+`functions/create-checkout-session.js` decides what is charged. The browser
+sends only SKUs and quantities — a forged price in the request is ignored,
+which is verified by the test cases in the commit. Keep the two tables in step
+or the cart total and the Stripe total will disagree.
+
+**The discount rule** implemented is the one with published terms: two or more
+training bats carrying the "Mix & Match Training Tools" badge take 10% off
+those lines. The grips carry a "Training Grip Mix & Match" badge whose terms I
+could not find — no rule is applied to them. Confirm with the client and add it
+to `MIX_RULE` in both files if it exists.
 
 ## What still needs real content
 
@@ -85,10 +143,12 @@ them. Entrance animations are additionally gated behind a `js` class set in
 3. **Hero video.** Absent by design; see `assets/video/README.md` for the cut.
 4. **The contact form** posts nowhere. Point its `action` at the real endpoint
    (Wix, Formspree, Netlify Forms) before launch.
-5. **Cart.** The header cart is presentational. Wire it to the real store when
-   the commerce platform is decided.
+5. **Stripe keys**, per the section above. Also confirm the shipping countries
+   in the function — it currently allows US and CA — and whether Stripe Tax
+   should be switched on.
 6. **Footer links** for Terms, Returns and Blog are placeholders (`#terms`,
-   `#returns`, `#blog`).
+   `#returns`, `#blog`). A real store needs Terms, Returns and Privacy pages
+   before Stripe will be happy.
 
 ## Editing note
 

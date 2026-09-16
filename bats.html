@@ -34,10 +34,10 @@
     </nav>
 
     <div class="header__actions">
-      <a class="cart-btn" href="#cart" aria-label="Cart, 0 items">
+      <button class="cart-btn" type="button" data-cart-open aria-label="Cart, 0 items">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-        <span class="cart-btn__count">0</span>
-      </a>
+        <span class="cart-btn__count" data-cart-count>0</span>
+      </button>
       <a class="btn btn--accent header__cta" href="grips.html">Shop grips</a>
       <button class="nav-toggle" data-nav-toggle type="button" aria-expanded="false" aria-label="Menu">
         <span class="nav-toggle__bars" aria-hidden="true"></span>
@@ -45,6 +45,24 @@
     </div>
   </div>
 </header>
+
+<!-- Cart drawer. Rendered by assets/js/cart.js from localStorage. -->
+<div class="cart-drawer" data-cart-drawer hidden>
+  <div class="cart-drawer__scrim" data-cart-scrim></div>
+  <aside class="cart-drawer__panel" role="dialog" aria-modal="true" aria-label="Cart">
+    <header class="cart-drawer__head">
+      <h2 class="cart-drawer__title">Your cart</h2>
+      <button class="cart-drawer__close" type="button" data-cart-close aria-label="Close cart">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18"/>
+        </svg>
+      </button>
+    </header>
+    <div class="cart-drawer__body" data-cart-body></div>
+    <div class="cart-drawer__foot" data-cart-foot hidden></div>
+    <p class="cart-status" data-cart-status role="status"></p>
+  </aside>
+</div>
 
   <section class="page-hero section--dark">
     <div class="wrap">
@@ -79,6 +97,7 @@
             <h3 class="product-card__name">The Half Bat with PPG</h3>
             <p class="product-card__price">$149.99</p>
             <p class="product-card__badge">Mix &amp; Match Training Tools</p>
+            <button class="add-btn" type="button" data-add-to-cart="half-bat">Add to cart</button>
           </div>
         </article>
         <article class="product-card" data-tilt>
@@ -89,6 +108,7 @@
             <h3 class="product-card__name">Youth &ldquo;Finisher&rdquo; Half Bat with PPG</h3>
             <p class="product-card__price">$144.99</p>
             <p class="product-card__badge">Mix &amp; Match Training Tools</p>
+            <button class="add-btn" type="button" data-add-to-cart="youth-finisher">Add to cart</button>
           </div>
         </article>
         <article class="product-card" data-tilt>
@@ -99,6 +119,7 @@
             <h3 class="product-card__name">The Sledge Heavy Half Bat with PPG</h3>
             <p class="product-card__price">$199.99</p>
             <p class="product-card__badge">Mix &amp; Match Training Tools</p>
+            <button class="add-btn" type="button" data-add-to-cart="sledge">Add to cart</button>
           </div>
         </article>
         <article class="product-card" data-tilt>
@@ -109,6 +130,7 @@
             <h3 class="product-card__name">NoCastBat with PPG</h3>
             <p class="product-card__price">$149.99</p>
             <p class="product-card__badge">Excl. sales tax</p>
+            <button class="add-btn" type="button" data-add-to-cart="nocast">Add to cart</button>
           </div>
         </article>
         <article class="product-card" data-tilt>
@@ -119,6 +141,7 @@
             <h3 class="product-card__name">CUSTOM Youth &ldquo;Finisher&rdquo; Half Bat with PPG</h3>
             <p class="product-card__price">$149.99</p>
             <p class="product-card__badge">Team colors &amp; logo</p>
+            <button class="add-btn" type="button" data-add-to-cart="custom-youth-finisher">Add to cart</button>
           </div>
         </article>
         <article class="product-card" data-tilt>
@@ -129,6 +152,7 @@
             <h3 class="product-card__name">CUSTOM &ldquo;Finisher&rdquo; Half Bat with PPG</h3>
             <p class="product-card__price">$159.99</p>
             <p class="product-card__badge">Team colors &amp; logo</p>
+            <button class="add-btn" type="button" data-add-to-cart="custom-finisher">Add to cart</button>
           </div>
         </article>
         <article class="product-card" data-tilt>
@@ -139,6 +163,7 @@
             <h3 class="product-card__name">CUSTOM &ldquo;Iron&rdquo; Half Bat with PPG</h3>
             <p class="product-card__price">$159.99</p>
             <p class="product-card__badge">Team colors &amp; logo</p>
+            <button class="add-btn" type="button" data-add-to-cart="custom-iron">Add to cart</button>
           </div>
         </article>
         <article class="product-card" data-tilt>
@@ -149,6 +174,7 @@
             <h3 class="product-card__name">STRINGKING Metal 2 BBCOR with Pivot Point Grip</h3>
             <p class="product-card__price">$169.99</p>
             <p class="product-card__badge">Excl. sales tax</p>
+            <button class="add-btn" type="button" data-add-to-cart="stringking-metal2">Add to cart</button>
           </div>
         </article>
         <article class="product-card" data-tilt>
@@ -159,6 +185,7 @@
             <h3 class="product-card__name">PPG Skinny Training Bat</h3>
             <p class="product-card__price">$39.99</p>
             <p class="product-card__badge">Excl. sales tax</p>
+            <button class="add-btn" type="button" data-add-to-cart="skinny-trainer">Add to cart</button>
           </div>
         </article>
         <article class="product-card" data-tilt>
@@ -169,6 +196,7 @@
             <h3 class="product-card__name">PPG Wiffle Bat</h3>
             <p class="product-card__price">$49.99</p>
             <p class="product-card__badge">Excl. sales tax</p>
+            <button class="add-btn" type="button" data-add-to-cart="wiffle">Add to cart</button>
           </div>
         </article>
       </div>
@@ -310,5 +338,6 @@
 </footer>
 
 <script src="assets/js/main.js" defer></script>
+<script type="module" src="assets/js/cart.js"></script>
 </body>
 </html>

@@ -510,16 +510,17 @@ button { font: inherit; color: inherit; cursor: pointer; }
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: .4;
+  opacity: .92;
 }
 
-/* Warm bloom that tracks the pointer a little harder than the footage. */
+/* Warm bloom that tracks the pointer a little harder than the footage.
+   Kept low so it lifts the photograph instead of washing it out. */
 .hero-stage__glow {
   background:
-    radial-gradient(48% 52% at 34% 42%, rgba(255, 138, 31, .5) 0%, rgba(255, 138, 31, 0) 68%),
-    radial-gradient(38% 44% at 76% 66%, rgba(226, 86, 0, .28) 0%, rgba(226, 86, 0, 0) 72%);
+    radial-gradient(48% 52% at 30% 44%, rgba(255, 138, 31, .42) 0%, rgba(255, 138, 31, 0) 68%),
+    radial-gradient(38% 44% at 78% 64%, rgba(226, 86, 0, .22) 0%, rgba(226, 86, 0, 0) 72%);
   mix-blend-mode: screen;
-  opacity: .65;
+  opacity: .34;
   pointer-events: none;
 }
 
@@ -529,20 +530,45 @@ button { font: inherit; color: inherit; cursor: pointer; }
     linear-gradient(to right, rgba(242, 239, 231, .16) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(242, 239, 231, .16) 1px, transparent 1px);
   background-size: 88px 88px;
-  opacity: .3;
+  opacity: .14;
   -webkit-mask-image: radial-gradient(70% 62% at 50% 50%, #000 12%, transparent 78%);
           mask-image: radial-gradient(70% 62% at 50% 50%, #000 12%, transparent 78%);
   pointer-events: none;
 }
 
+/* Three stacked washes rather than one flat one: a left wedge that protects
+   the headline and releases by ~70%, a floor fade under the scroll cue, and a
+   vignette that keeps the photograph off the header and the section edge. The
+   right half of the frame stays essentially uncovered, so the neon reads. */
 .hero-stage__scrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(100deg,
-    rgba(16, 16, 16, .96) 0%,
-    rgba(16, 16, 16, .86) 42%,
-    rgba(16, 16, 16, .44) 100%);
+  background:
+    linear-gradient(97deg,
+      rgba(16, 16, 16, .94) 0%,
+      rgba(16, 16, 16, .88) 24%,
+      rgba(16, 16, 16, .58) 46%,
+      rgba(16, 16, 16, .16) 64%,
+      rgba(16, 16, 16, 0) 80%),
+    linear-gradient(to top,
+      rgba(16, 16, 16, .82) 0%,
+      rgba(16, 16, 16, 0) 30%),
+    radial-gradient(125% 95% at 50% 48%,
+      rgba(16, 16, 16, 0) 42%,
+      rgba(16, 16, 16, .58) 100%);
   pointer-events: none;
+}
+
+/* Stacked layout — the copy spans the full width, so the wash has to as well. */
+@media (max-width: 900px) {
+  .hero-stage__media { opacity: .78; }
+  .hero-stage__scrim {
+    background:
+      linear-gradient(to top,
+        rgba(16, 16, 16, .96) 6%,
+        rgba(16, 16, 16, .78) 46%,
+        rgba(16, 16, 16, .5) 100%);
+  }
 }
 
 .hero-stage__content {
@@ -1424,6 +1450,103 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 .form .btn { justify-self: start; }
 
+/* ==========================================================================
+   3D BAT STAGE
+   The canvas sits over a static product photo. If WebGL is unavailable, the
+   module fails to load, or motion is reduced, the photo is what stays — the
+   section is never empty.
+   ========================================================================== */
+.bat3d {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  min-height: 420px;
+  border: 1px solid var(--ink-line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background:
+    radial-gradient(70% 55% at 50% 42%, rgba(230, 138, 24, .14) 0%, rgba(230, 138, 24, 0) 70%),
+    var(--ink-raise);
+}
+@media (min-width: 900px) { .bat3d { aspect-ratio: 4 / 5; } }
+
+.bat3d__fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 12%;
+  transition: opacity var(--dur-slow) var(--ease);
+}
+.bat3d__fallback img { width: 100%; height: 100%; object-fit: contain; }
+
+/* Once the renderer reports ready, cross-fade the photo out. */
+.bat3d[data-ready="true"] .bat3d__fallback { opacity: 0; }
+
+.bat3d__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease);
+}
+.bat3d[data-ready="true"] .bat3d__canvas { opacity: 1; }
+.bat3d[data-failed="true"] .bat3d__canvas { display: none; }
+
+.bat3d__hint {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  z-index: 4;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--on-dark-dim);
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease);
+  pointer-events: none;
+}
+.bat3d[data-ready="true"] .bat3d__hint { opacity: 1; }
+@media (hover: none) { .bat3d__hint { display: none; } }
+
+/* Hotspots are positioned per frame by bat3d.js; CSS only styles them. */
+.hotspot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.bat3d[data-failed="true"] .hotspot { display: none; }
+
+.hotspot__dot {
+  width: 9px;
+  height: 9px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--orange);
+  box-shadow: 0 0 0 4px rgba(230, 138, 24, .22);
+}
+.hotspot__label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--on-dark);
+  background: rgba(16, 16, 16, .78);
+  backdrop-filter: blur(6px);
+  padding: 5px 10px;
+  border-radius: 2px;
+}
+
 /* --- Inner page hero ---------------------------------------------------- */
 .page-hero {
   position: relative;
@@ -1537,6 +1660,236 @@ button { font: inherit; color: inherit; cursor: pointer; }
   color: var(--on-dark-dim);
 }
 .ds-note strong { color: var(--on-dark); }
+
+/* ==========================================================================
+   CART
+   ========================================================================== */
+.cart-btn__count {
+  background: var(--ink-line);
+  color: var(--on-dark-dim);
+  transition: background-color var(--dur-fast) var(--ease),
+              color var(--dur-fast) var(--ease),
+              transform var(--dur-base) var(--ease);
+}
+.cart-btn__count.is-filled {
+  background: var(--orange);
+  color: var(--ink);
+  transform: scale(1.08);
+}
+
+/* Add-to-cart button on a product card */
+.add-btn {
+  width: 100%;
+  margin-top: var(--space-3);
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--on-dark);
+  background: transparent;
+  border: 1px solid var(--ink-line);
+  border-radius: var(--radius);
+  transition: background-color var(--dur-fast) var(--ease),
+              color var(--dur-fast) var(--ease),
+              border-color var(--dur-fast) var(--ease);
+}
+.add-btn:hover { border-color: var(--orange); color: var(--orange); }
+.add-btn.is-added {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: var(--ink);
+}
+.add-btn.is-added::after { content: " \2713"; }
+
+/* --- Drawer ------------------------------------------------------------- */
+.cart-drawer { position: fixed; inset: 0; z-index: 150; }
+.cart-drawer[hidden] { display: none; }
+
+.cart-drawer__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 8, 8, .66);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease);
+}
+.cart-drawer[data-open="true"] .cart-drawer__scrim { opacity: 1; }
+
+.cart-drawer__panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: min(460px, 100%);
+  display: flex;
+  flex-direction: column;
+  background: var(--ink);
+  border-left: 1px solid var(--ink-line);
+  transform: translateX(100%);
+  transition: transform var(--dur-base) var(--ease);
+}
+.cart-drawer[data-open="true"] .cart-drawer__panel { transform: none; }
+
+.cart-drawer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--ink-line);
+  flex: none;
+}
+.cart-drawer__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: -.02em;
+  text-transform: uppercase;
+}
+.cart-drawer__close {
+  width: 40px; height: 40px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: 1px solid var(--ink-line);
+  border-radius: var(--radius);
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.cart-drawer__close:hover { border-color: var(--orange); color: var(--orange); }
+
+.cart-drawer__body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-4) var(--space-5);
+}
+
+.cart-drawer__foot {
+  flex: none;
+  padding: var(--space-4) var(--space-5) var(--space-5);
+  border-top: 1px solid var(--ink-line);
+  background: var(--ink-raise);
+}
+
+/* Line item */
+.cart-line {
+  display: grid;
+  grid-template-columns: 80px minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--ink-line);
+}
+.cart-line:first-child { padding-top: 0; }
+.cart-line__img {
+  width: 80px; height: 60px;
+  object-fit: contain;
+  background: #141414;
+  border-radius: 2px;
+}
+.cart-line__name { margin: 0; font-size: 14px; font-weight: 700; line-height: 1.35; }
+.cart-line__unit {
+  margin: 3px 0 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--on-dark-dim);
+}
+.cart-line__total {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.qty { display: flex; align-items: center; gap: 2px; }
+.qty__btn {
+  width: 28px; height: 28px;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  line-height: 1;
+  background: transparent;
+  border: 1px solid var(--ink-line);
+  border-radius: 2px;
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.qty__btn:hover { border-color: var(--orange); color: var(--orange); }
+.qty__value {
+  min-width: 34px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+.qty__remove {
+  margin-left: var(--space-2);
+  padding: 0;
+  background: none;
+  border: 0;
+  font-size: 12px;
+  color: var(--on-dark-dim);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color var(--dur-fast) var(--ease);
+}
+.qty__remove:hover { color: var(--orange); }
+
+/* Totals */
+.cart-totals { margin: 0 0 var(--space-3); }
+.cart-totals div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 7px 0;
+}
+.cart-totals dt { margin: 0; font-size: 14px; color: var(--on-dark-dim); }
+.cart-totals dd { margin: 0; font-family: var(--font-mono); font-size: 14px; }
+.cart-totals__save dt, .cart-totals__save dd { color: var(--orange); }
+.cart-totals__grand {
+  margin-top: 4px;
+  padding-top: var(--space-3) !important;
+  border-top: 1px solid var(--ink-line);
+}
+.cart-totals__grand dt { color: var(--on-dark); font-weight: 700; font-size: 16px; }
+.cart-totals__grand dd { font-size: 18px; }
+
+.cart-nudge {
+  margin: 0 0 var(--space-3);
+  padding: 11px 14px;
+  background: rgba(230, 138, 24, .1);
+  border-left: 2px solid var(--orange);
+  border-radius: 2px;
+  font-size: 13px;
+  color: var(--on-dark);
+}
+.cart-fineprint {
+  margin: 0 0 var(--space-3);
+  font-size: 12px;
+  color: var(--on-dark-dim);
+}
+.cart-checkout { width: 100%; }
+
+.cart-status:empty { display: none; }
+.cart-status {
+  margin: var(--space-3) 0 0;
+  padding: 11px 14px;
+  background: rgba(226, 86, 0, .12);
+  border-left: 2px solid var(--ember);
+  border-radius: 2px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--on-dark);
+}
+
+/* Empty state */
+.cart-empty {
+  margin: var(--space-5) 0 var(--space-2);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 24px;
+  text-transform: uppercase;
+  letter-spacing: -.02em;
+}
+.cart-empty__sub { margin: 0 0 var(--space-4); font-size: 15px; color: var(--on-dark-dim); }
+.cart-empty__links { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 
 /* --- Scroll reveal ------------------------------------------------------ */
 .js [data-reveal] {

@@ -34,10 +34,10 @@
     </nav>
 
     <div class="header__actions">
-      <a class="cart-btn" href="#cart" aria-label="Cart, 0 items">
+      <button class="cart-btn" type="button" data-cart-open aria-label="Cart, 0 items">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-        <span class="cart-btn__count">0</span>
-      </a>
+        <span class="cart-btn__count" data-cart-count>0</span>
+      </button>
       <a class="btn btn--accent header__cta" href="grips.html">Shop grips</a>
       <button class="nav-toggle" data-nav-toggle type="button" aria-expanded="false" aria-label="Menu">
         <span class="nav-toggle__bars" aria-hidden="true"></span>
@@ -45,6 +45,24 @@
     </div>
   </div>
 </header>
+
+<!-- Cart drawer. Rendered by assets/js/cart.js from localStorage. -->
+<div class="cart-drawer" data-cart-drawer hidden>
+  <div class="cart-drawer__scrim" data-cart-scrim></div>
+  <aside class="cart-drawer__panel" role="dialog" aria-modal="true" aria-label="Cart">
+    <header class="cart-drawer__head">
+      <h2 class="cart-drawer__title">Your cart</h2>
+      <button class="cart-drawer__close" type="button" data-cart-close aria-label="Close cart">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18"/>
+        </svg>
+      </button>
+    </header>
+    <div class="cart-drawer__body" data-cart-body></div>
+    <div class="cart-drawer__foot" data-cart-foot hidden></div>
+    <p class="cart-status" data-cart-status role="status"></p>
+  </aside>
+</div>
 
 <main id="main">
 
@@ -140,15 +158,32 @@
     </div>
   </div>
 
-  <!-- What it is, in three points. The full argument lives on Our Story. -->
+  <!-- What it is, in three points, next to the model you can turn.
+       The 3D stage falls back to the product photo it sits on top of. -->
   <section class="section section--dark">
     <div class="wrap">
       <div class="split" data-reveal>
-        <figure style="margin:0">
-          <div class="frame frame--portrait frame--dark media-reveal">
-            <img src="assets/img/story-glove-knob.jpg" alt="A gloved hand resting on the integrated knob of a Pivot Point grip." loading="lazy" width="507" height="639">
+        <div class="bat3d" data-bat3d>
+          <div class="bat3d__fallback">
+            <img src="assets/img/bat-sledge.jpg" alt="A training bat fitted with a Pivot Point Grip." loading="lazy" width="251" height="181">
           </div>
-        </figure>
+          <canvas class="bat3d__canvas" aria-hidden="true"></canvas>
+
+          <span class="hotspot" data-hotspot="0.6">
+            <span class="hotspot__dot"></span>
+            <span class="hotspot__label">Integrated knob</span>
+          </span>
+          <span class="hotspot" data-hotspot="4.0">
+            <span class="hotspot__dot"></span>
+            <span class="hotspot__label">Palm pads</span>
+          </span>
+          <span class="hotspot" data-hotspot="8.4">
+            <span class="hotspot__dot"></span>
+            <span class="hotspot__label">Power Grooves&trade;</span>
+          </span>
+
+          <p class="bat3d__hint">Move to turn it</p>
+        </div>
 
         <div>
           <p class="eyebrow">About the grip</p>
@@ -351,5 +386,6 @@
 </footer>
 
 <script src="assets/js/main.js" defer></script>
+<script type="module" src="assets/js/cart.js"></script>
 </body>
 </html>
