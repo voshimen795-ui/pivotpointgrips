@@ -1,6 +1,15 @@
-/* Pivot Point Grips — site behaviour. No dependencies. */
+/* Pivot Point Grips — site behaviour. No dependencies.
+ *
+ * Everything here is an enhancement: with JS off or motion reduced, the page
+ * still renders completely. Pointer work is throttled to one rAF per frame
+ * and writes CSS custom properties rather than touching style.transform, so
+ * the compositor does the interpolation.
+ */
 (function () {
   'use strict';
+
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
   /* --- Mobile nav ------------------------------------------------------- */
   var toggle = document.querySelector('[data-nav-toggle]');
@@ -58,13 +67,140 @@
   /* --- Marquee: duplicate the track so the loop is seamless -------------- */
   document.querySelectorAll('[data-marquee]').forEach(function (track) {
     track.insertAdjacentHTML('beforeend', track.innerHTML);
-    track.setAttribute('aria-hidden', 'false');
   });
 
-  /* --- Scroll reveal ----------------------------------------------------- */
-  var targets = document.querySelectorAll('[data-reveal]');
-  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* --- Headline word stagger --------------------------------------------
+   * Split on words only, and keep each word's text in a single span so the
+   * accessibility tree still reads a normal sentence. <br> is preserved.
+   */
+  document.querySelectorAll('[data-split]').forEach(function (el) {
+    var out = '';
+    var i = 0;
 
+    Array.prototype.forEach.call(el.childNodes, function (node) {
+      if (node.nodeType === 3) {
+        node.textContent.split(/(\s+)/).forEach(function (part) {
+          if (!part.trim()) { out += part; return; }
+          out += '<span class="word"><span style="--i:' + i++ + '">' + part + '</span></span>';
+        });
+      } else if (node.nodeName === 'BR') {
+        out += '<br>';
+      } else if (node.nodeType === 1) {
+        // Keep wrapper elements (e.g. .accent) and split their text inside.
+        var inner = '';
+        node.textContent.split(/(\s+)/).forEach(function (part) {
+          if (!part.trim()) { inner += part; return; }
+          inner += '<span class="word"><span style="--i:' + i++ + '">' + part + '</span></span>';
+        });
+        var clone = node.cloneNode(false);
+        clone.innerHTML = inner;
+        out += clone.outerHTML;
+      }
+    });
+
+    el.innerHTML = out;
+  });
+
+  requestAnimationFrame(function () {
+    document.querySelectorAll('[data-split]').forEach(function (el) {
+      el.classList.add('is-lit');
+    });
+  });
+
+  /* --- Pointer tracking --------------------------------------------------
+   * One shared rAF loop. Each registered element gets --px / --py in the
+   * range -1 … 1, measured from its own centre; the CSS decides what to do
+   * with them. Elements that scrolled out of view are skipped.
+   */
+  var tracked = [];
+  var pointer = { x: 0, y: 0, active: false };
+  var queued = false;
+
+  function track(el, opts) {
+    tracked.push({ el: el, global: !!(opts && opts.global), cls: opts && opts.cls });
+  }
+
+  function flush() {
+    queued = false;
+
+    tracked.forEach(function (item) {
+      var r = item.el.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > window.innerHeight) return;
+
+      var px, py;
+
+      if (item.global) {
+        px = (pointer.x / window.innerWidth) * 2 - 1;
+        py = (pointer.y / window.innerHeight) * 2 - 1;
+      } else {
+        var inside =
+          pointer.x >= r.left && pointer.x <= r.right &&
+          pointer.y >= r.top && pointer.y <= r.bottom;
+
+        if (item.cls) item.el.classList.toggle(item.cls, inside && pointer.active);
+        if (!inside) { item.el.style.setProperty('--px', 0); item.el.style.setProperty('--py', 0); return; }
+
+        px = ((pointer.x - r.left) / r.width) * 2 - 1;
+        py = ((pointer.y - r.top) / r.height) * 2 - 1;
+      }
+
+      item.el.style.setProperty('--px', px.toFixed(3));
+      item.el.style.setProperty('--py', py.toFixed(3));
+    });
+  }
+
+  if (finePointer && !reduced) {
+    window.addEventListener('pointermove', function (e) {
+      pointer.x = e.clientX;
+      pointer.y = e.clientY;
+      pointer.active = true;
+      if (!queued) { queued = true; requestAnimationFrame(flush); }
+    }, { passive: true });
+
+    document.addEventListener('pointerleave', function () {
+      pointer.active = false;
+      tracked.forEach(function (item) {
+        item.el.style.setProperty('--px', 0);
+        item.el.style.setProperty('--py', 0);
+        if (item.cls) item.el.classList.remove(item.cls);
+      });
+    });
+
+    document.querySelectorAll('[data-stage]').forEach(function (el) {
+      track(el, { global: true });
+    });
+    document.querySelectorAll('[data-tilt]').forEach(function (el) {
+      track(el, { cls: 'tilt' });
+    });
+  }
+
+  /* --- Hero footage ------------------------------------------------------
+   * The <video> carries the neon still as its poster, so a missing or slow
+   * file degrades to the image rather than to a black box. Pause it when the
+   * hero scrolls away — no point decoding frames nobody sees.
+   */
+  var heroVideo = document.querySelector('[data-hero-video]');
+
+  if (heroVideo) {
+    if (reduced) {
+      heroVideo.removeAttribute('autoplay');
+      heroVideo.pause();
+    } else if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            var p = heroVideo.play();
+            if (p && p.catch) p.catch(function () { /* autoplay blocked; poster stands in */ });
+          } else {
+            heroVideo.pause();
+          }
+        });
+      }, { threshold: 0.05 }).observe(heroVideo);
+    }
+  }
+
+  /* --- Scroll reveal ----------------------------------------------------- */
+  var targets = document.querySelectorAll('[data-reveal], .media-reveal');
   if (!targets.length) return;
 
   if (reduced || !('IntersectionObserver' in window)) {

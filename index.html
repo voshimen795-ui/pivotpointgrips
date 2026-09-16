@@ -9,12 +9,14 @@
 <link rel="preload" href="assets/fonts/Inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/fonts/fonts.css">
 <link rel="stylesheet" href="assets/css/style.css">
+<!-- Entrance animations start things hidden. Gate them on JS being able to
+     un-hide: without this class the page renders fully, just without motion. -->
+<script>document.documentElement.className += " js";</script>
 </head>
 <body>
 
 <a class="skip-link" href="#main">Skip to content</a>
 
-<!-- ============================ HEADER ============================ -->
 <header class="site-header">
   <div class="wrap site-header__inner">
     <a class="brand" href="index.html">
@@ -23,22 +25,20 @@
     </a>
 
     <nav class="nav" data-nav aria-label="Main">
-      <a class="nav__link" href="#grips">Grips</a>
-      <a class="nav__link" href="#bats">Bats</a>
-      <a class="nav__link" href="#team">Team Sales</a>
+      <a class="nav__link" href="grips.html">Grips</a>
+      <a class="nav__link" href="bats.html">Bats</a>
+      <a class="nav__link" href="team-sales.html">Team Sales</a>
       <a class="nav__link" href="testimonials.html">Testimonials</a>
-      <a class="nav__link" href="#installation">Installation</a>
-      <a class="nav__link" href="#story">Our Story</a>
+      <a class="nav__link" href="installation.html">Installation</a>
+      <a class="nav__link" href="story.html">Our Story</a>
     </nav>
 
     <div class="header__actions">
       <a class="cart-btn" href="#cart" aria-label="Cart, 0 items">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
-        </svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
         <span class="cart-btn__count">0</span>
       </a>
-      <a class="btn btn--accent header__cta" href="#grips">Shop grips</a>
+      <a class="btn btn--accent header__cta" href="grips.html">Shop grips</a>
       <button class="nav-toggle" data-nav-toggle type="button" aria-expanded="false" aria-label="Menu">
         <span class="nav-toggle__bars" aria-hidden="true"></span>
       </button>
@@ -48,30 +48,49 @@
 
 <main id="main">
 
-  <!-- ============================ HERO ============================ -->
-  <section class="hero-neon">
-    <img class="hero-neon__bg" src="assets/img/hero-neon.jpg" alt="" aria-hidden="true" width="1012" height="546">
-    <div class="wrap hero-neon__inner">
-      <div class="hero-neon__copy">
+  <!-- 3D hero. The <video> falls back to its poster when the file is absent. -->
+  <section class="hero-stage" data-stage>
+    <div class="hero-stage__layer" style="--depth:26">
+      <div class="hero-stage__drift">
+        <video class="hero-stage__media" data-hero-video
+               autoplay muted loop playsinline preload="metadata"
+               poster="assets/img/hero-neon.jpg"
+               aria-hidden="true" tabindex="-1">
+          <source src="assets/video/hero.mp4" type="video/mp4">
+          <source src="assets/video/hero.webm" type="video/webm">
+        </video>
+      </div>
+    </div>
+
+    <div class="hero-stage__layer hero-stage__glow" style="--depth:-46" aria-hidden="true"></div>
+    <div class="hero-stage__layer hero-stage__grid" style="--depth:14" aria-hidden="true"></div>
+    <div class="hero-stage__scrim" aria-hidden="true"></div>
+
+    <div class="wrap hero-stage__content">
+      <div class="hero-stage__copy">
         <p class="eyebrow">Baseball &amp; Softball &nbsp;/&nbsp; Grip Trainer</p>
-        <h1 class="display display--hero">
+        <h1 class="display display--hero" data-split>
           Your hands are the<br>
           <span class="accent">pivot point.</span>
         </h1>
         <p class="lede" style="margin-top:clamp(22px,3vw,34px)">
           A one-piece grip with a built-in knob, Power Grooves&trade; and ergonomic
-          palm pads — it puts a batter's hands in the best position and keeps them
-          there, with no conscious thought.
+          palm pads &mdash; it puts a batter's hands in the best position and keeps
+          them there, with no conscious thought.
         </p>
-        <div class="hero-neon__actions">
-          <a class="btn btn--accent" href="#grips">Shop grips</a>
-          <a class="btn btn--ghost" href="#bats">See the training bats</a>
+        <div class="hero-stage__actions">
+          <a class="btn btn--accent" href="grips.html">Shop grips</a>
+          <a class="btn btn--ghost" href="bats.html">See the training bats</a>
         </div>
       </div>
     </div>
+
+    <p class="hero-cue" aria-hidden="true">
+      <span class="hero-cue__rail"></span>
+      Scroll
+    </p>
   </section>
 
-  <!-- ============================ MARQUEE ============================ -->
   <div class="marquee">
     <p class="marquee__label">Swinging with PPG</p>
     <div class="marquee__viewport">
@@ -88,12 +107,11 @@
     </div>
   </div>
 
-  <!-- ============================ STATS ============================ -->
   <div class="wrap">
     <div class="stat-row">
       <div class="stat">
         <span class="stat__value">3</span>
-        <p class="stat__label">Power Grooves&trade;, palm pads and an integrated knob — one piece, no wrap.</p>
+        <p class="stat__label">Power Grooves&trade;, palm pads and an integrated knob &mdash; one piece, no wrap.</p>
       </div>
       <div class="stat">
         <span class="stat__value">2</span>
@@ -110,25 +128,24 @@
     </div>
   </div>
 
-  <!-- ============================ PHOTO STRIP ============================ -->
-  <div class="photo-strip" data-reveal>
-    <div class="frame frame--square frame--dark">
+  <div class="photo-strip">
+    <div class="frame frame--square frame--dark media-reveal">
       <img src="assets/img/tile-cage-swing.jpg" alt="A hitter loading up with a Pivot Point grip on his bat inside the cage." loading="lazy" width="330" height="327">
     </div>
-    <div class="frame frame--square frame--dark">
+    <div class="frame frame--square frame--dark media-reveal">
       <img src="assets/img/tile-grips-pair.jpg" alt="Two Pivot Point grips installed on bat handles, showing the power grooves." loading="lazy" width="334" height="327">
     </div>
-    <div class="frame frame--square frame--dark">
+    <div class="frame frame--square frame--dark media-reveal">
       <img src="assets/img/tile-gloves-grip.jpg" alt="Batting gloves wrapped around a Pivot Point grip." loading="lazy" width="342" height="327">
     </div>
   </div>
 
-  <!-- ============================ ABOUT THE GRIP ============================ -->
+  <!-- What it is, in three points. The full argument lives on Our Story. -->
   <section class="section section--dark">
     <div class="wrap">
       <div class="split" data-reveal>
         <figure style="margin:0">
-          <div class="frame frame--portrait frame--dark">
+          <div class="frame frame--portrait frame--dark media-reveal">
             <img src="assets/img/story-glove-knob.jpg" alt="A gloved hand resting on the integrated knob of a Pivot Point grip." loading="lazy" width="507" height="639">
           </div>
         </figure>
@@ -138,7 +155,7 @@
           <h2 class="h2">A first of its<br>kind product</h2>
           <p class="lede" style="margin-top:clamp(20px,2.6vw,30px)">
             The Pivot Point Grip combines function and comfort to create the perfect
-            bat grip — ideal for baseball and softball players looking to improve
+            bat grip &mdash; ideal for baseball and softball players looking to improve
             their hitting performance.
           </p>
 
@@ -165,200 +182,72 @@
               </div>
             </li>
           </ul>
+
+          <p style="margin-top:clamp(26px,3.4vw,38px)">
+            <a class="btn btn--ghost" href="story.html">Why we built it <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          </p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ============================ GRIPS ============================ -->
-  <section class="section section--dark" id="grips" style="padding-top:0">
-    <div class="wrap">
-      <div class="section-head" data-reveal>
-        <div>
-          <p class="eyebrow">Grips</p>
-          <h2 class="h2">Turn any bat<br>into your best bat</h2>
-        </div>
-        <p class="section-head__note">Self install or<br>free install by mail</p>
-      </div>
-
-      <div class="product-grid product-grid--tall" data-reveal>
-        <article class="product-card">
-          <div class="product-card__media">
-            <img src="assets/img/grip-adult-black.jpg" alt="Adult Pivot Point Grip in black." loading="lazy" width="219" height="436">
-          </div>
-          <div class="product-card__body">
-            <h3 class="product-card__name">Pivot Point Grip &mdash; Self Installation</h3>
-            <p class="product-card__price">$44.99</p>
-            <p class="product-card__badge">Training Grip Mix &amp; Match · Excl. sales tax</p>
-          </div>
-        </article>
-
-        <article class="product-card">
-          <div class="product-card__media">
-            <img src="assets/img/grip-youth-orange.jpg" alt="Youth Pivot Point Grip in orange." loading="lazy" width="200" height="436">
-          </div>
-          <div class="product-card__body">
-            <h3 class="product-card__name">Youth Pivot Point Grip &mdash; Self Installation</h3>
-            <p class="product-card__price">$34.99</p>
-            <p class="product-card__badge">Training Grip Mix &amp; Match · Excl. sales tax</p>
-          </div>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============================ WHY IT'S HARD ============================ -->
+  <!-- Two doors into the catalogue. The full grids live on their own pages. -->
   <section class="section section--cream">
     <div class="wrap">
-      <div class="split" data-reveal>
-        <div>
-          <p class="eyebrow eyebrow--dim">The problem</p>
-          <h2 class="h2">Why gripping<br>the bat is<br>extremely hard</h2>
-        </div>
-        <div class="prose lede">
-          <p>
-            If you played or coached baseball or softball you have probably heard,
-            &ldquo;Don't grip the bat too tight, keep it loose in your hands.&rdquo;
-            Coaches would all agree that gripping the bat too tight is the easiest
-            way to ruin a good swing. All of this is true — but most of us fail.
-          </p>
-          <p>
-            What if we told you the biggest offender of gripping the bat too tight
-            is the skinny design of the bat handle?
-          </p>
-          <p>
-            Just like you, we were struggling to help players be consistent hitters,
-            so we created a grip that would finally make the bat feel loose in their
-            hands. Pivot Point Grips let you use your entire hand — not just your
-            fingers — which puts you in a stronger, more comfortable position to
-            create a faster hand pivot. The result: faster exit velocity and more
-            consistent barrel accuracy.
-          </p>
-          <p>
-            The concept is simple. <strong>The greater the surface area your hands
-            connect to the bat, the more control you have of the barrel.</strong>
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============================ BATS ============================ -->
-  <section class="section section--dark" id="bats">
-    <div class="wrap">
       <div class="section-head" data-reveal>
         <div>
-          <p class="eyebrow">Bats</p>
-          <h2 class="h2">Training tools<br>built around the grip</h2>
+          <p class="eyebrow eyebrow--dim">Shop</p>
+          <h2 class="h2">Two ways in</h2>
         </div>
         <p class="section-head__note">Mix &amp; match<br>2+ bats = 10% off</p>
       </div>
 
-      <div class="product-grid" data-reveal>
-        <article class="product-card">
-          <div class="product-card__media"><img src="assets/img/bat-half-bat.jpg" alt="The Half Bat with PPG." loading="lazy" width="251" height="181"></div>
-          <div class="product-card__body">
-            <h3 class="product-card__name">The Half Bat with PPG</h3>
-            <p class="product-card__price">$149.99</p>
-            <p class="product-card__badge">Mix &amp; Match Training Tools</p>
+      <div class="card-grid" data-reveal style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr))">
+        <a class="door" href="grips.html">
+          <div class="frame frame--wide frame--dark media-reveal">
+            <img src="assets/img/grip-adult-black.jpg" alt="" loading="lazy" width="219" height="436" style="object-fit:contain;padding:18px">
           </div>
-        </article>
-        <article class="product-card">
-          <div class="product-card__media"><img src="assets/img/bat-youth-finisher.jpg" alt="Youth Finisher Half Bat with PPG." loading="lazy" width="251" height="181"></div>
-          <div class="product-card__body">
-            <h3 class="product-card__name">Youth &ldquo;Finisher&rdquo; Half Bat with PPG</h3>
-            <p class="product-card__price">$144.99</p>
-            <p class="product-card__badge">Mix &amp; Match Training Tools</p>
+          <div class="door__body">
+            <h3 class="h3">Grips</h3>
+            <p class="door__text">Turn any bat into your best bat. Adult and Youth, self-install or free install by mail.</p>
+            <span class="door__cta">From $34.99 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
           </div>
-        </article>
-        <article class="product-card">
-          <div class="product-card__media"><img src="assets/img/bat-sledge.jpg" alt="The Sledge Heavy Half Bat with PPG." loading="lazy" width="251" height="181"></div>
-          <div class="product-card__body">
-            <h3 class="product-card__name">The Sledge Heavy Half Bat with PPG</h3>
-            <p class="product-card__price">$199.99</p>
-            <p class="product-card__badge">Mix &amp; Match Training Tools</p>
+        </a>
+
+        <a class="door" href="bats.html">
+          <div class="frame frame--wide frame--dark media-reveal">
+            <img src="assets/img/bat-sledge.jpg" alt="" loading="lazy" width="251" height="181" style="object-fit:contain;padding:18px">
           </div>
-        </article>
-        <article class="product-card">
-          <div class="product-card__media"><img src="assets/img/bat-nocast.jpg" alt="NoCastBat with PPG." loading="lazy" width="256" height="181"></div>
-          <div class="product-card__body">
-            <h3 class="product-card__name">NoCastBat with PPG</h3>
-            <p class="product-card__price">$149.99</p>
-            <p class="product-card__badge">Excl. sales tax</p>
+          <div class="door__body">
+            <h3 class="h3">Bats</h3>
+            <p class="door__text">Ten training tools built around the grip &mdash; half bats, the Sledge, NoCast, BBCOR and wiffle.</p>
+            <span class="door__cta">From $39.99 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
           </div>
-        </article>
-        <article class="product-card">
-          <div class="product-card__media"><img src="assets/img/bat-custom-youth-finisher.jpg" alt="Custom Youth Finisher Half Bat with PPG." loading="lazy" width="251" height="188"></div>
-          <div class="product-card__body">
-            <h3 class="product-card__name">CUSTOM Youth &ldquo;Finisher&rdquo; Half Bat with PPG</h3>
-            <p class="product-card__price">$149.99</p>
-            <p class="product-card__badge">Team colors &amp; logo</p>
-          </div>
-        </article>
-        <article class="product-card">
-          <div class="product-card__media"><img src="assets/img/bat-custom-finisher.jpg" alt="Custom Finisher Half Bat with PPG." loading="lazy" width="251" height="188"></div>
-          <div class="product-card__body">
-            <h3 class="product-card__name">CUSTOM &ldquo;Finisher&rdquo; Half Bat with PPG</h3>
-            <p class="product-card__price">$159.99</p>
-            <p class="product-card__badge">Team colors &amp; logo</p>
-          </div>
-        </article>
-        <article class="product-card">
-          <div class="product-card__media"><img src="assets/img/bat-custom-iron.jpg" alt="Custom Iron Half Bat with PPG." loading="lazy" width="251" height="188"></div>
-          <div class="product-card__body">
-            <h3 class="product-card__name">CUSTOM &ldquo;Iron&rdquo; Half Bat with PPG</h3>
-            <p class="product-card__price">$159.99</p>
-            <p class="product-card__badge">Team colors &amp; logo</p>
-          </div>
-        </article>
-        <article class="product-card">
-          <div class="product-card__media"><img src="assets/img/bat-stringking-metal2.jpg" alt="StringKing Metal 2 BBCOR with Pivot Point Grip." loading="lazy" width="256" height="188"></div>
-          <div class="product-card__body">
-            <h3 class="product-card__name">STRINGKING Metal 2 BBCOR with Pivot Point Grip</h3>
-            <p class="product-card__price">$169.99</p>
-            <p class="product-card__badge">Excl. sales tax</p>
-          </div>
-        </article>
-        <article class="product-card">
-          <div class="product-card__media"><img src="assets/img/bat-skinny-trainer.jpg" alt="PPG Skinny Training Bat." loading="lazy" width="251" height="188"></div>
-          <div class="product-card__body">
-            <h3 class="product-card__name">PPG Skinny Training Bat</h3>
-            <p class="product-card__price">$39.99</p>
-            <p class="product-card__badge">Excl. sales tax</p>
-          </div>
-        </article>
-        <article class="product-card">
-          <div class="product-card__media"><img src="assets/img/bat-wiffle.jpg" alt="PPG Wiffle Bat." loading="lazy" width="251" height="188"></div>
-          <div class="product-card__body">
-            <h3 class="product-card__name">PPG Wiffle Bat</h3>
-            <p class="product-card__price">$49.99</p>
-            <p class="product-card__badge">Excl. sales tax</p>
-          </div>
-        </article>
+        </a>
       </div>
     </div>
   </section>
 
-  <!-- ============================ TESTIMONIAL TEASER ============================ -->
-  <section class="section section--cream">
+  <!-- One voice, then out to the full page. -->
+  <section class="section section--dark">
     <div class="wrap">
       <div class="feature" data-reveal>
         <figure class="feature__media" style="margin:0">
-          <div class="frame frame--portrait frame--arch">
+          <div class="frame frame--portrait frame--dark frame--arch media-reveal">
             <img src="assets/img/coach-kyle-crookes.jpg" alt="Kyle Crookes, head coach at the University of Central Missouri." loading="lazy" width="362" height="584">
-            <figcaption class="frame__caption">Photo — Kyle Crookes</figcaption>
+            <figcaption class="frame__caption">Photo &mdash; Kyle Crookes</figcaption>
           </div>
-          <p class="figure-note">UCM Mules &nbsp;·&nbsp; Head Coach</p>
+          <p class="figure-note">UCM Mules &nbsp;&middot;&nbsp; Head Coach</p>
         </figure>
 
         <div>
-          <p class="eyebrow eyebrow--dim">Testimonials &nbsp;/&nbsp; 08 Voices</p>
+          <p class="eyebrow">Testimonials &nbsp;/&nbsp; 08 Voices</p>
           <blockquote class="quote-xl">
             &ldquo;Pivot Point Grips are mandatory for our new players during BP.&rdquo;
           </blockquote>
           <p class="lede">
             They have become a core piece of our hitting program here since we
-            received our first demo — from my son who is 14 and learning the high
+            received our first demo &mdash; from my son who is 14 and learning the high
             level swing to the established players in our program.
           </p>
           <div class="attribution">
@@ -366,189 +255,14 @@
             <p class="attribution__role">Head Coach, University of Central Missouri</p>
           </div>
           <p style="margin-top:clamp(26px,3.4vw,38px)">
-            <a class="btn btn--ink" href="testimonials.html">Read all testimonials</a>
+            <a class="btn btn--accent" href="testimonials.html">Read all testimonials</a>
           </p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ============================ INSTALLATION ============================ -->
-  <section class="section section--dark" id="installation">
-    <div class="wrap">
-      <div class="section-head" data-reveal>
-        <div>
-          <p class="eyebrow">Grip installation</p>
-          <h2 class="h2">Six steps,<br>then 24 hours</h2>
-        </div>
-        <p class="section-head__note">Don't want to?<br>We'll do it free</p>
-      </div>
-
-      <div class="install-grid" data-reveal>
-        <div>
-          <p class="install-kicker">What you need</p>
-          <ul class="tool-list">
-            <li>Pivot Point Grip</li>
-            <li>Work bench or table vise</li>
-            <li>Hacksaw with metal blade</li>
-            <li>Box cutter</li>
-            <li>Safety glasses</li>
-            <li>Bucket</li>
-            <li>Shop rag</li>
-            <li>Solvent</li>
-            <li>Golf grip tape</li>
-          </ul>
-
-          <ol class="steps">
-            <li>
-              <p class="steps__title">Remove the existing grip tape</p>
-              <p class="steps__text">Carefully strip the handle back to bare.</p>
-            </li>
-            <li>
-              <p class="steps__title">Remove the metal knob</p>
-              <p class="steps__text">Use a hacksaw or metal blade saw (not included). DeMarini or hard plastic knobs: see the note below.</p>
-            </li>
-            <li>
-              <p class="steps__title">Build up the handle with grip tape</p>
-              <p class="steps__text">Adult: cut golf grip tape to 8.5&Prime; and build the handle up to .92&Prime;–.93&Prime;. Youth: two pieces cut to 7.25&Prime;.</p>
-            </li>
-            <li>
-              <p class="steps__title">Saturate the tape with solvent</p>
-              <p class="steps__text">Work over a bucket and keep a shop rag close.</p>
-            </li>
-            <li>
-              <p class="steps__title">Slide the grip on</p>
-              <p class="steps__text">Align the palm pads with the brand label. You should feel resistance — if it slides on easily, go back to step 3 and add more tape.</p>
-            </li>
-            <li>
-              <p class="steps__title">Let it sit for 24 hours</p>
-              <p class="steps__text">Then take it to the cage.</p>
-            </li>
-          </ol>
-
-          <div class="callout">
-            <p class="callout__title">DeMarini or hard plastic knob</p>
-            <p class="callout__text">
-              Twist the knob until it breaks free — a vise helps. Then use a hammer
-              and nail to remove the pin in the handle, and return to step 3.
-            </p>
-          </div>
-
-          <div class="callout callout--accent">
-            <p class="callout__title">Rather not do it yourself?</p>
-            <p class="callout__text">
-              We'll install it for you for free. Email
-              <a href="mailto:info@pivotpointgrips.com">info@pivotpointgrips.com</a>.
-            </p>
-          </div>
-        </div>
-
-        <figure style="margin:0">
-          <div class="frame frame--dark">
-            <img src="assets/img/install-steps.jpg" alt="Photo guide showing each step of installing a Pivot Point grip on a bat handle." loading="lazy" width="310" height="978">
-          </div>
-          <p class="figure-note">Step-by-step reference</p>
-        </figure>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============================ OUR STORY ============================ -->
-  <section class="section section--cream" id="story">
-    <div class="wrap">
-      <div class="split" data-reveal>
-        <div>
-          <p class="eyebrow eyebrow--dim">Our story</p>
-          <h2 class="h2">Two brothers,<br>a garage,<br>and some Play-Doh</h2>
-        </div>
-        <div class="prose lede">
-          <p>
-            Pivot Point was founded by two brothers with decades of coaching
-            experience at all levels of the game. As former collegiate players,
-            Brett and Kent Becker excel at breaking down the fundamentals to improve
-            the way players approach hitting. After years of seeing players
-            challenged with hand alignment on the bat, they created a product to
-            improve a player's bat grip.
-          </p>
-          <p>
-            Pivot Point's mission is to help every player become a better hitter,
-            and it starts with the proper grip. Whether you're a youth league
-            beginner or a professional, softball or baseball player —
-            <strong>every swing starts with a Pivot Point&trade;.</strong>
-          </p>
-        </div>
-      </div>
-
-      <div class="photo-strip" data-reveal style="margin-top:clamp(36px,5vw,64px)">
-        <div class="frame frame--wide">
-          <img src="assets/img/story-coaching.jpg" alt="A Pivot Point coach demonstrating hand position on a bat to a player." loading="lazy" width="505" height="639">
-        </div>
-        <div class="frame frame--wide">
-          <img src="assets/img/cage-team.jpg" alt="A team session in the batting cage with Pivot Point training bats." loading="lazy" width="1012" height="637">
-        </div>
-        <div class="frame frame--wide">
-          <img src="assets/img/hero-batter.jpg" alt="A hitter gripping a bat fitted with a Pivot Point grip." loading="lazy" width="1012" height="610">
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============================ FAQ ============================ -->
-  <section class="section section--dark" id="faq">
-    <div class="wrap">
-      <div class="section-head" data-reveal>
-        <h2 class="h2">Questions,<br>answered</h2>
-        <p class="section-head__note">More at<br>info@ppg</p>
-      </div>
-
-      <div class="faq" data-reveal>
-        <details>
-          <summary>Which size do I need — Adult or Youth?</summary>
-          <p>
-            Adult size is recommended for hands larger than 7.25&Prime;, measured from
-            the bottom of the palm to the longest finger. Anything smaller, go Youth.
-          </p>
-        </details>
-        <details>
-          <summary>What bats does the grip fit?</summary>
-          <p>
-            You can repurpose just about any bat into a Pivot Point Grips training
-            bat. The existing knob comes off, the handle gets built up with grip
-            tape, and the grip slides on.
-          </p>
-        </details>
-        <details>
-          <summary>I don't want to cut the knob off myself.</summary>
-          <p>
-            Then don't. If you're not comfortable removing the knob and installing
-            the grip, we'll do it for you for free — email
-            <a href="mailto:info@pivotpointgrips.com">info@pivotpointgrips.com</a>
-            and we'll sort out the details.
-          </p>
-        </details>
-        <details>
-          <summary>What about DeMarini bats?</summary>
-          <p>
-            DeMarini bats are some of the best performing bats on the market, but
-            the knobs break a lot — which makes them ideal candidates. Twist the
-            knob until it breaks free, remove the pin in the handle with a hammer
-            and nail, then follow the standard steps from step 3.
-          </p>
-        </details>
-        <details>
-          <summary>Do you do team orders?</summary>
-          <p>
-            Yes. Team pricing, custom bat colors and engraved team logos are all
-            available — <a href="#contact">send us a note</a> and we'll put a
-            quote together.
-          </p>
-        </details>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============================ TEAM SALES CTA ============================ -->
-  <section class="section cta-band" id="team">
+  <section class="section cta-band">
     <div class="wrap cta-band__grid">
       <div>
         <p class="eyebrow">For coaches</p>
@@ -572,77 +286,15 @@
         </div>
 
         <div class="cta-band__actions">
-          <a class="btn btn--ink" href="#contact">Get team pricing</a>
+          <a class="btn btn--ink" href="team-sales.html">Get team pricing</a>
           <a class="btn btn--outline-ink" href="testimonials.html">Read the testimonials</a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ============================ CONTACT ============================ -->
-  <section class="section section--dark" id="contact">
-    <div class="wrap">
-      <div class="contact-grid" data-reveal>
-        <div>
-          <p class="eyebrow">Contact us</p>
-          <h2 class="h2">Talk to us.<br>Or just talk<br>baseball.</h2>
-          <p class="lede" style="margin-top:clamp(20px,2.6vw,30px)">
-            Pivot Point wants to hear from you. If you have a general inquiry, a
-            concern about your order, or simply want to talk baseball, send your
-            details and we'll get back to you as soon as possible.
-          </p>
-          <p class="lede" style="margin-top:18px">
-            You can also email us at
-            <a href="mailto:info@pivotpointgrips.com" style="color:var(--orange)">info@pivotpointgrips.com</a>.
-          </p>
-        </div>
-
-        <!--
-          The form posts nowhere yet. Point `action` at the client's form
-          endpoint (Wix / Formspree / Netlify Forms) before launch.
-        -->
-        <form class="form" action="#" method="post">
-          <div class="form__row">
-            <div class="field">
-              <label for="first">First name <span aria-hidden="true">*</span></label>
-              <input id="first" name="first" type="text" autocomplete="given-name" required>
-            </div>
-            <div class="field">
-              <label for="last">Last name <span aria-hidden="true">*</span></label>
-              <input id="last" name="last" type="text" autocomplete="family-name" required>
-            </div>
-          </div>
-          <div class="field">
-            <label for="email">Email <span aria-hidden="true">*</span></label>
-            <input id="email" name="email" type="email" autocomplete="email" required>
-          </div>
-          <div class="form__row">
-            <div class="field">
-              <label for="phone">Phone</label>
-              <input id="phone" name="phone" type="tel" autocomplete="tel">
-            </div>
-            <div class="field">
-              <label for="order">Order number</label>
-              <input id="order" name="order" type="text" placeholder="If applicable">
-            </div>
-          </div>
-          <div class="field">
-            <label for="subject">Subject</label>
-            <input id="subject" name="subject" type="text">
-          </div>
-          <div class="field">
-            <label for="message">Message</label>
-            <textarea id="message" name="message" rows="5"></textarea>
-          </div>
-          <button class="btn btn--accent" type="submit">Send</button>
-        </form>
-      </div>
-    </div>
-  </section>
-
 </main>
 
-<!-- ============================ FOOTER ============================ -->
 <footer class="site-footer">
   <div class="wrap footer-shout">
     <p class="footer-shout__title">
@@ -656,23 +308,24 @@
       <div class="footer-col">
         <p class="footer-col__title">Shop</p>
         <ul>
-          <li><a href="#grips">Grips</a></li>
-          <li><a href="#bats">Bats</a></li>
-          <li><a href="#team">Team Sales</a></li>
+          <li><a href="grips.html">Grips</a></li>
+          <li><a href="bats.html">Bats</a></li>
+          <li><a href="team-sales.html">Team Sales</a></li>
         </ul>
       </div>
       <div class="footer-col">
         <p class="footer-col__title">Learn</p>
         <ul>
-          <li><a href="#installation">Grip Installation</a></li>
-          <li><a href="#story">Our Story</a></li>
+          <li><a href="installation.html">Grip Installation</a></li>
+          <li><a href="story.html">Our Story</a></li>
           <li><a href="testimonials.html">Testimonials</a></li>
-          <li><a href="#faq">FAQ</a></li>
+          <li><a href="faq.html">FAQ</a></li>
         </ul>
       </div>
       <div class="footer-col">
         <p class="footer-col__title">Info</p>
         <ul>
+          <li><a href="contact.html">Contact</a></li>
           <li><a href="#terms">Terms and Conditions</a></li>
           <li><a href="#returns">Returns</a></li>
           <li><a href="#blog">Blog</a></li>
@@ -682,25 +335,17 @@
         <p class="footer-col__title">Contact</p>
         <p><a href="mailto:info@pivotpointgrips.com">info@pivotpointgrips.com</a></p>
         <div class="socials">
-          <a href="https://www.facebook.com/pivotpointgrips/" aria-label="Facebook">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4v-2c0-.6.4-1 1-1z"/></svg>
-          </a>
-          <a href="https://www.instagram.com/pivotpointgrips/" aria-label="Instagram">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
-          </a>
-          <a href="https://www.tiktok.com/@pivotpointgrips" aria-label="TikTok">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 3h3c.3 2 1.6 3.4 4 3.7V10c-1.6 0-3-.5-4-1.3V15a6 6 0 1 1-6-6c.3 0 .7 0 1 .1v3.1a3 3 0 1 0 2 2.8z"/></svg>
-          </a>
-          <a href="https://x.com/pivotpointgrips" aria-label="X">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 3h3l-6.6 7.5L21.6 21h-6l-4.4-5.8L6 21H3l7-8-7-10h6.2l4 5.4zm-1 16h1.7L7.6 4.8H5.8z"/></svg>
-          </a>
+          <a href="https://www.facebook.com/pivotpointgrips/" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4v-2c0-.6.4-1 1-1z"/></svg></a>
+          <a href="https://www.instagram.com/pivotpointgrips/" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+          <a href="https://www.tiktok.com/@pivotpointgrips" aria-label="TikTok"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 3h3c.3 2 1.6 3.4 4 3.7V10c-1.6 0-3-.5-4-1.3V15a6 6 0 1 1-6-6c.3 0 .7 0 1 .1v3.1a3 3 0 1 0 2 2.8z"/></svg></a>
+          <a href="https://x.com/pivotpointgrips" aria-label="X"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 3h3l-6.6 7.5L21.6 21h-6l-4.4-5.8L6 21H3l7-8-7-10h6.2l4 5.4zm-1 16h1.7L7.6 4.8H5.8z"/></svg></a>
         </div>
       </div>
     </div>
 
     <div class="footer-bar">
       <span>&copy; 2026 Pivot Point Grips</span>
-      <span>Topeka, Kansas &nbsp;·&nbsp; Made in the USA</span>
+      <span>Topeka, Kansas &nbsp;&middot;&nbsp; Made in the USA</span>
     </div>
   </div>
 </footer>
