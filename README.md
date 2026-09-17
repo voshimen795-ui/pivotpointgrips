@@ -68,14 +68,14 @@ in one place and the whole site follows.
   push.
 - **Cards.** Pointer-follow 3D lift, capped at 3°.
 - **Headlines.** Words rise into place on a 55ms stagger.
-- **3D grip.** See below.
+- **3D bat.** See below.
 
 All of it stops under `prefers-reduced-motion: reduce`, and pointer effects are
 gated behind `(hover: hover) and (pointer: fine)` so touch devices never pay for
 them. Entrance animations are additionally gated behind a `js` class set in
 `<head>` — with JavaScript off the pages render completely, just without motion.
 
-## The 3D grip
+## The 3D bat
 
 `assets/js/bat3d.js` builds the bat in three.js. There is no model file: a bat
 is a surface of revolution, so the silhouette is a radius-along-length profile
@@ -83,11 +83,28 @@ that gets lathed. The groove count, depth and taper are parameters at the top
 of the file, not baked geometry — change `GROOVES` and it re-renders with a
 different number of ridges.
 
-The camera frames the *grip*, not the whole bat, and the model rotates about
-`PIVOT_Y` (the middle of the grip) so the grip holds the centre while the
-barrel sweeps in and out of shot. Camera distance is derived from the field of
-view, so any container shape frames it identically. The three labels are HTML,
-reprojected from 3D anchors every frame.
+Three things in there are less obvious than they look:
+
+- **The spin and the lean are separate groups.** Applied to one object, a Y
+  spin on top of a Z lean sweeps the bat around a cone and swings the barrel
+  out of frame. Nested — `bat` holds the lean, `spinner` inside it turns about
+  the bat's own axis — the silhouette never changes and the whole bat stays in
+  shot at every angle.
+- **The wordmark is what makes the rotation visible.** A lathed bat spinning
+  about its own axis changes neither silhouette nor shading, so without
+  something asymmetric on the barrel the turntable looks completely frozen.
+  Two canvas decals, `PIVOT POINT` and `PPG`, sit on opposite faces so
+  something is always entering or leaving view.
+- **The decals follow the barrel's own profile.** The barrel curves from the
+  taper into the parallel section, so a straight cone shell dips under the
+  surface in the middle and the decal comes out sliced in half. `decalProfile()`
+  samples `barrelRadiusAt()` and offsets it outward instead.
+
+Motion is timed off the rAF clock in units per second, not per frame, so the
+turntable runs at the same speed on a 60Hz laptop and a 120Hz phone and does
+not jump after a backgrounded tab. A full turn takes about 12 seconds
+(`SPIN_RATE`). Camera distance is derived from the field of view, so any
+container shape frames the bat identically.
 
 three.js is ~180 kB gzipped, so it is **never in the initial payload**. The
 module is imported only when the section is within 400px of the viewport, and
