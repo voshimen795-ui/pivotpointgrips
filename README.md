@@ -37,7 +37,31 @@ assets/img/              Photography and product shots
 assets/video/            Hero footage — see the note in that folder
 assets/vendor/           three.js (MIT), self-hosted, lazy-loaded
 functions/               Stripe Checkout — the only server-side code
+tools/                   Asset pipeline (see below)
 ```
+
+## Product imagery
+
+`assets/img/*.png` are the staged product shots the cards use. They are
+generated from the `.jpg` sources by `tools/stage-products.py`, which exists
+because the sources are screenshot crops off the old site: every one carries a
+flat `rgb(29,29,29)` rectangle of that site's background, plainly visible
+against the card, and every one framed its product at a different scale — one
+bat filled 3.4% of its frame while a grip filled 21%.
+
+The tool floods the background out to transparency from the border inwards
+(flooding from the edge rather than selecting dark pixels is what keeps the
+black grip intact, since it is close to the background in value but not
+connected to it), then re-stages each product at a fixed canvas size with a
+fixed 80% fill. The card supplies the stage — a soft radial pool of light — so
+a dark bat still separates from a dark card.
+
+Run it again after replacing any source:
+
+    python3 tools/stage-products.py
+
+It is capped at 2x upscale. Most sources are already hitting that cap, which
+is the real limit on how sharp these can get — see the TODO list below.
 
 ## Colour
 
@@ -153,10 +177,17 @@ to `MIX_RULE` in both files if it exists.
    from the current Athletes and Coaches carousels. Keep `data-role="athlete"`
    or `data-role="coach"` on each `<article>` so the filter chips and the hero
    counts stay correct.
-2. **Images.** `assets/img/` currently holds crops taken from screenshots of the
-   live site — correct framing, but low resolution. Replace each file with the
-   original at the same filename and nothing else changes. `install-steps.jpg`
-   in particular should be swapped for the full instruction sheet.
+2. **Images.** `assets/img/` holds crops taken from screenshots of the live
+   site. Framing and staging are now consistent, but the sources are small and
+   most are being upscaled to the 2x cap, so they are soft. Drop the originals
+   in at the same `.jpg` filename and re-run `tools/stage-products.py`.
+   `install-steps.jpg` in particular should be swapped for the full
+   instruction sheet.
+   `bat-custom-youth-finisher.jpg` is not a whole-bat shot — it is a close-up
+   of the engraving on a maroon custom barrel ("PP", a 12 shield, PIVOT POINT
+   GRIPS / TEXAS TWELVE). It is a real product photo and it does show what
+   "team colors & logo" buys, but it does not sit in the same family as the
+   nine whole-bat shots. A full-bat custom photo would fix that.
 3. **Hero video.** Absent by design; see `assets/video/README.md` for the cut.
 4. **The contact form** posts nowhere. Point its `action` at the real endpoint
    (Wix, Formspree, Netlify Forms) before launch.

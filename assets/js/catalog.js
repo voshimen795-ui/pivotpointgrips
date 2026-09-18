@@ -22,52 +22,52 @@ export const MIX_RULE = {
 export const PRODUCTS = {
   'ppg-grip-adult': {
     name: 'Pivot Point Grip — Self Installation',
-    cents: 4499, img: 'grip-adult-black.jpg', category: 'grips',
+    cents: 4499, img: 'grip-adult-black.png', category: 'grips',
   },
   'ppg-grip-youth': {
     name: 'Youth Pivot Point Grip — Self Installation',
-    cents: 3499, img: 'grip-youth-orange.jpg', category: 'grips',
+    cents: 3499, img: 'grip-youth-orange.png', category: 'grips',
   },
 
   'half-bat': {
     name: 'The Half Bat with PPG',
-    cents: 14999, img: 'bat-half-bat.jpg', category: 'bats', mix: 'bat',
+    cents: 14999, img: 'bat-half-bat.png', category: 'bats', mix: 'bat',
   },
   'youth-finisher': {
     name: 'Youth "Finisher" Half Bat with PPG',
-    cents: 14499, img: 'bat-youth-finisher.jpg', category: 'bats', mix: 'bat',
+    cents: 14499, img: 'bat-youth-finisher.png', category: 'bats', mix: 'bat',
   },
   'sledge': {
     name: 'The Sledge Heavy Half Bat with PPG',
-    cents: 19999, img: 'bat-sledge.jpg', category: 'bats', mix: 'bat',
+    cents: 19999, img: 'bat-sledge.png', category: 'bats', mix: 'bat',
   },
   'nocast': {
     name: 'NoCastBat with PPG',
-    cents: 14999, img: 'bat-nocast.jpg', category: 'bats',
+    cents: 14999, img: 'bat-nocast.png', category: 'bats',
   },
   'custom-youth-finisher': {
     name: 'CUSTOM Youth "Finisher" Half Bat with PPG',
-    cents: 14999, img: 'bat-custom-youth-finisher.jpg', category: 'bats',
+    cents: 14999, img: 'bat-custom-youth-finisher.png', category: 'bats',
   },
   'custom-finisher': {
     name: 'CUSTOM "Finisher" Half Bat with PPG',
-    cents: 15999, img: 'bat-custom-finisher.jpg', category: 'bats',
+    cents: 15999, img: 'bat-custom-finisher.png', category: 'bats',
   },
   'custom-iron': {
     name: 'CUSTOM "Iron" Half Bat with PPG',
-    cents: 15999, img: 'bat-custom-iron.jpg', category: 'bats',
+    cents: 15999, img: 'bat-custom-iron.png', category: 'bats',
   },
   'stringking-metal2': {
     name: 'STRINGKING Metal 2 BBCOR with Pivot Point Grip',
-    cents: 16999, img: 'bat-stringking-metal2.jpg', category: 'bats',
+    cents: 16999, img: 'bat-stringking-metal2.png', category: 'bats',
   },
   'skinny-trainer': {
     name: 'PPG Skinny Training Bat',
-    cents: 3999, img: 'bat-skinny-trainer.jpg', category: 'bats',
+    cents: 3999, img: 'bat-skinny-trainer.png', category: 'bats',
   },
   'wiffle': {
     name: 'PPG Wiffle Bat',
-    cents: 4999, img: 'bat-wiffle.jpg', category: 'bats',
+    cents: 4999, img: 'bat-wiffle.png', category: 'bats',
   },
 };
 
