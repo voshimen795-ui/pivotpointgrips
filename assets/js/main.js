@@ -263,6 +263,58 @@
     }
   }
 
+  /* --- Product page: variant picker + sticky buy bar ----------------------
+   * The page ships with a working default selected in the markup, so it is
+   * buyable before this runs. All this does is swap the selection.
+   */
+  var pdp = document.querySelector('[data-pdp]');
+
+  if (pdp) {
+    var addBtn = pdp.querySelector('[data-pdp-add]');
+    var priceEl = pdp.querySelector('[data-pdp-price]');
+    var chosenEl = pdp.querySelector('[data-pdp-chosen]');
+    var blurbEl = pdp.querySelector('[data-pdp-blurb]');
+    var imgEl = pdp.querySelector('[data-pdp-img]');
+    var barName = document.querySelector('[data-bar-name]');
+    var barPrice = document.querySelector('[data-bar-price]');
+    var barAdd = document.querySelector('[data-bar-add]');
+
+    var choose = function (btn) {
+      var sku = btn.getAttribute('data-variant');
+
+      pdp.querySelectorAll('[data-variant]').forEach(function (b) {
+        b.setAttribute('aria-pressed', String(b === btn));
+      });
+
+      if (addBtn) addBtn.setAttribute('data-add-to-cart', sku);
+      if (barAdd) barAdd.setAttribute('data-add-to-cart', sku);
+      if (priceEl) priceEl.textContent = btn.getAttribute('data-price');
+      if (barPrice) barPrice.textContent = btn.getAttribute('data-price');
+      if (chosenEl) chosenEl.textContent = btn.getAttribute('data-label');
+      if (barName) barName.textContent = btn.getAttribute('data-bar');
+      if (blurbEl) blurbEl.textContent = btn.getAttribute('data-blurb');
+
+      var img = btn.getAttribute('data-img');
+      if (imgEl && img) imgEl.setAttribute('src', img);
+    };
+
+    pdp.addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-variant]');
+      if (btn) choose(btn);
+    });
+
+    // Reveal the mobile buy bar once the real buy panel has scrolled away,
+    // so the two are never on screen at the same time.
+    var bar = document.querySelector('[data-buy-bar]');
+    var panel = pdp.querySelector('[data-pdp-buy]');
+
+    if (bar && panel && 'IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        bar.classList.toggle('is-on', !entries[0].isIntersecting);
+      }, { threshold: 0 }).observe(panel);
+    }
+  }
+
   /* --- Scroll reveal ----------------------------------------------------- */
   var targets = document.querySelectorAll('[data-reveal], .media-reveal');
   if (!targets.length) return;

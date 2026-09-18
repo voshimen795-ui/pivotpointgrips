@@ -23,7 +23,15 @@
  * one number and Stripe charges another.
  */
 
+/* Variant SKUs are `base/variantId`. They are listed flat here on purpose:
+   this table is the only thing that decides what anyone is charged, so it
+   should be readable at a glance rather than computed. Keep it in step with
+   assets/js/catalog.js. */
 const PRICES = {
+  'finisher/youth':        { name: 'The "Finisher" Half Bat with PPG — Youth',          cents: 14499, mix: 'bat' },
+  'finisher/adult':        { name: 'The "Finisher" Half Bat with PPG — Adult',          cents: 14999, mix: 'bat' },
+  'finisher/custom':       { name: 'The "Finisher" Half Bat with PPG — Custom',         cents: 15999, mix: 'bat' },
+
   'ppg-grip-adult':        { name: 'Pivot Point Grip — Self Installation',              cents: 4499 },
   'ppg-grip-youth':        { name: 'Youth Pivot Point Grip — Self Installation',        cents: 3499 },
   'half-bat':              { name: 'The Half Bat with PPG',                             cents: 14999, mix: 'bat' },

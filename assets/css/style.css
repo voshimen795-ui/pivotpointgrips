@@ -252,14 +252,25 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* Pressed state, shared by every button. */
 .btn:active { transform: translateY(0); }
 
-/* Tertiary: a text link with an arrow, no box. */
+/* Tertiary: a text link with an arrow, no box. Horizontal padding is not
+   decoration here — without it the hit area is narrower than 44px. */
 .btn--text {
-  padding: 10px 0;
+  padding: 10px 12px;
+  margin-inline: -12px;
+  min-width: var(--tap);
   border: 0;
   background: none;
   color: var(--orange);
 }
-.btn--text:hover { color: var(--orange-hi); }
+.btn--text:hover { color: var(--orange-hi); text-decoration: underline; text-underline-offset: 4px; }
+
+/* --orange only reaches 2.5:1 on cream, so light surfaces take the darker
+   sibling. */
+.section--cream .btn--text,
+.compare-card .btn--text,
+.voice-card .btn--text { color: var(--accent-ink); }
+.section--cream .btn--text:hover,
+.compare-card .btn--text:hover { color: #8f3800; }
 
 /* Every button clears the minimum hit area. */
 .btn, .add-btn, .chip { min-height: var(--tap); }
@@ -1357,7 +1368,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 
 .socials { display: flex; gap: 10px; margin-top: 4px; }
+.socials { flex-wrap: wrap; }
 .socials a {
+  /* flex items shrink by default — in the two-column mobile footer that
+     squeezed these below the 44px minimum. */
+  flex: none;
   width: var(--tap); height: var(--tap);
   display: grid;
   place-items: center;
@@ -1999,3 +2014,257 @@ button { font: inherit; color: inherit; cursor: pointer; }
 @media (prefers-reduced-motion: reduce) {
   .js [data-reveal] { opacity: 1; transform: none; }
 }
+
+/* ==========================================================================
+   PRODUCT LANDING (finisher.html)
+   A single-product page: the buy panel is the spine, everything else argues
+   for it. Built as its own components rather than bending the catalogue grid,
+   because the job is different — one product, many reasons.
+   ========================================================================== */
+.pdp {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+  gap: clamp(28px, 4vw, 72px);
+  align-items: start;
+}
+@media (max-width: 900px) { .pdp { grid-template-columns: 1fr; } }
+
+/* The stage holds the 3D bat on desktop, the product photo everywhere else. */
+.pdp__stage { position: relative; }
+@media (min-width: 901px) {
+  .pdp__buy { position: sticky; top: 104px; }
+}
+
+.pdp__eyebrow { margin-bottom: var(--space-3); }
+.pdp__title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2.3rem, 5.4vw, 4rem);
+  line-height: .96;
+  letter-spacing: -.026em;
+  word-spacing: .08em;
+  text-transform: uppercase;
+  margin: 0 0 var(--space-4);
+}
+.pdp__promise {
+  margin: 0 0 var(--space-5);
+  font-size: clamp(1.02rem, 1.35vw, 1.17rem);
+  line-height: 1.6;
+  color: var(--on-dark-dim);
+  max-width: 46ch;
+}
+
+.pdp__price-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-4);
+}
+.pdp__price {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: clamp(1.6rem, 2.6vw, 2.1rem);
+  color: var(--orange);
+}
+.pdp__price-note {
+  font-family: var(--font-mono);
+  font-size: var(--label-size);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--on-dark-dim);
+}
+
+/* --- Variant selector --------------------------------------------------- */
+.opt { margin-bottom: var(--space-4); }
+.opt__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+.opt__label {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--label-size);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--on-dark-dim);
+}
+.opt__chosen { margin: 0; font-size: 15px; font-weight: 700; }
+
+.opt__set { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+.opt__btn {
+  min-height: var(--tap);
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--on-dark);
+  background: var(--ink-raise);
+  border: 1px solid var(--line-control);
+  border-radius: var(--radius);
+  transition: border-color var(--dur-fast) var(--ease),
+              background-color var(--dur-fast) var(--ease),
+              color var(--dur-fast) var(--ease);
+}
+.opt__btn:hover { border-color: var(--orange); }
+.opt__btn[aria-pressed="true"] {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: var(--ink);
+}
+.opt__blurb {
+  margin: var(--space-3) 0 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--on-dark-dim);
+  min-height: 2.9em;   /* holds its space so the buy button never jumps */
+}
+
+/* The axis the client flagged as missing. Renders this note while the data
+   is empty rather than inventing inches. */
+.opt--pending .opt__set { display: none; }
+.opt__pending {
+  margin: 0;
+  padding: 13px 16px;
+  background: var(--ink-raise);
+  border: 1px dashed var(--line-control);
+  border-radius: var(--radius);
+  font-size: 15px;
+  color: var(--on-dark-dim);
+}
+.opt__pending a { color: var(--orange); text-decoration: underline; text-underline-offset: 3px; }
+
+.pdp__add { width: 100%; }
+
+/* --- Trust row ---------------------------------------------------------- */
+.trust {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--ink-line);
+}
+.trust__item { display: grid; gap: 3px; }
+.trust__title { margin: 0; font-size: 15px; font-weight: 700; }
+.trust__text { margin: 0; font-size: 14px; color: var(--on-dark-dim); }
+
+/* --- Sticky buy bar (mobile) -------------------------------------------- */
+.buy-bar {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 90;
+  display: none;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 12px var(--gutter) calc(12px + env(safe-area-inset-bottom, 0px));
+  background: rgba(16, 16, 16, .97);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid var(--ink-line);
+  transform: translateY(110%);
+  transition: transform var(--dur-base) var(--ease);
+}
+.buy-bar.is-on { transform: none; }
+@media (max-width: 900px) { .buy-bar { display: flex; } }
+@media (prefers-reduced-motion: reduce) { .buy-bar { transition: none; } }
+
+.buy-bar__info { flex: 1; min-width: 0; }
+.buy-bar__name {
+  margin: 0;
+  font-size: 13px;
+  color: var(--on-dark-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.buy-bar__price {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--orange);
+}
+.buy-bar .btn { flex: none; }
+
+/* --- Spec table --------------------------------------------------------- */
+.spec-table { width: 100%; border-collapse: collapse; }
+.spec-table th, .spec-table td {
+  padding: 15px 0;
+  text-align: left;
+  border-bottom: 1px solid var(--cream-line);
+  font-size: 16px;
+  vertical-align: top;
+}
+.section--dark .spec-table th, .section--dark .spec-table td { border-bottom-color: var(--ink-line); }
+.spec-table th {
+  width: 38%;
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: var(--label-size);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--on-light-dim);
+  padding-right: var(--space-4);
+}
+.section--dark .spec-table th { color: var(--on-dark-dim); }
+.spec-table caption {
+  caption-side: top;
+  text-align: left;
+  padding-bottom: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--label-size);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--on-light-dim);
+}
+@media (max-width: 560px) {
+  .spec-table th { width: 44%; font-size: 11px; }
+  .spec-table td { font-size: 15px; }
+}
+
+/* --- Compare cards ------------------------------------------------------ */
+.compare {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(14px, 1.8vw, 22px);
+}
+@media (max-width: 900px) { .compare { grid-template-columns: 1fr; } }
+
+.compare-card {
+  display: flex;
+  flex-direction: column;
+  padding: clamp(22px, 2.6vw, 32px);
+  background: var(--paper);
+  border: 1px solid var(--cream-line);
+  border-radius: var(--radius);
+  transition: transform var(--dur-base) var(--ease),
+              border-color var(--dur-base) var(--ease),
+              box-shadow var(--dur-base) var(--ease);
+}
+.compare-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--ink);
+  box-shadow: 0 18px 44px -26px rgba(16, 16, 16, .5);
+}
+.compare-card--this { border-color: var(--accent-ink); border-width: 2px; }
+.compare-card__thumb {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+  background: var(--cream-2);
+  border-radius: var(--radius);
+  margin-bottom: var(--space-3);
+}
+.compare-card__job {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--label-size);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--accent-ink);
+}
+.compare-card__text { margin: var(--space-2) 0 var(--space-4); font-size: 15px; line-height: 1.6; color: var(--on-light-dim); }
+.compare-card__foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }

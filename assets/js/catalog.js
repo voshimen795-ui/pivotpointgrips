@@ -29,6 +29,38 @@ export const PRODUCTS = {
     cents: 3499, img: 'grip-youth-orange.png', category: 'grips',
   },
 
+  /* The Finisher is the hero product and the only one with variants so far.
+     A variant's SKU is `base/variantId` — `finisher/adult`. Everything
+     downstream resolves through resolve(), so adding an axis to another
+     product is a data change, not a code change.
+
+     CONFIRMED prices, read off the client's own product cards. The LENGTH
+     lineup is NOT confirmed — see `lengths` below. */
+  'finisher': {
+    name: 'The "Finisher" Half Bat with PPG',
+    img: 'bat-half-bat.png', category: 'bats', mix: 'bat',
+    option: 'Model',
+    variants: [
+      { id: 'youth',  label: 'Youth',  cents: 14499,
+        img: 'bat-youth-finisher.png',
+        blurb: 'For hands under 7.25\u2033 \u2014 youth grip fitted.' },
+      { id: 'adult',  label: 'Adult',  cents: 14999,
+        img: 'bat-half-bat.png',
+        blurb: 'For hands over 7.25\u2033 \u2014 adult grip fitted.' },
+      { id: 'custom', label: 'Custom', cents: 15999,
+        img: 'bat-custom-finisher.png',
+        blurb: 'Your colors, your logo engraved on the barrel.' },
+    ],
+    /* TODO — the client's actual length lineup. Their site does not publish it
+       anywhere I could reach, and a wrong length on a buy button is a wrong
+       order, so this ships empty on purpose: the page renders a "lengths on
+       request" note instead of inventing inches. Fill this in and the length
+       selector appears, with no other change:
+           lengths: ['25\u2033', '27\u2033', '29\u2033', '31\u2033'],
+       Mirror it in functions/create-checkout-session.js. */
+    lengths: [],
+  },
+
   'half-bat': {
     name: 'The Half Bat with PPG',
     cents: 14999, img: 'bat-half-bat.png', category: 'bats', mix: 'bat',
@@ -75,6 +107,43 @@ export function money(cents) {
   return '$' + (cents / 100).toFixed(2);
 }
 
+/**
+ * Turn a cart SKU into everything the UI needs.
+ *
+ * Accepts both a plain SKU (`sledge`) and a variant SKU (`finisher/adult`),
+ * and returns null for anything that is not a real, buyable combination —
+ * which is what keeps a stale localStorage entry or a hand-typed SKU out of
+ * the cart.
+ */
+export function resolve(sku) {
+  const [base, variantId] = String(sku).split('/');
+  const p = PRODUCTS[base];
+  if (!p) return null;
+
+  if (!p.variants) {
+    // A plain product addressed with a variant is not a real combination.
+    if (variantId) return null;
+    return { sku, product: p, name: p.name, cents: p.cents, img: p.img, mix: p.mix };
+  }
+
+  const v = p.variants.find((x) => x.id === variantId);
+  if (!v) return null;
+  return {
+    sku, product: p, variant: v,
+    name: p.name + ' \u2014 ' + v.label,
+    cents: v.cents,
+    img: v.img || p.img,
+    mix: p.mix,
+  };
+}
+
+/** Lowest price across a product's variants — for "from $x" labels. */
+export function fromPrice(baseSku) {
+  const p = PRODUCTS[baseSku];
+  if (!p) return null;
+  return p.variants ? Math.min(...p.variants.map((v) => v.cents)) : p.cents;
+}
+
 /** Line items, discount and total. Mirrors the server's pricing exactly. */
 export function price(lines) {
   const items = [];
@@ -82,18 +151,18 @@ export function price(lines) {
   let mixQty = 0;
 
   for (const { sku, qty } of lines) {
-    const p = PRODUCTS[sku];
-    if (!p || qty < 1) continue;
-    const lineTotal = p.cents * qty;
+    const r = resolve(sku);
+    if (!r || qty < 1) continue;
+    const lineTotal = r.cents * qty;
     subtotal += lineTotal;
-    if (p.mix === MIX_RULE.group) mixQty += qty;
-    items.push({ sku, qty, product: p, lineTotal });
+    if (r.mix === MIX_RULE.group) mixQty += qty;
+    items.push({ sku, qty, ...r, lineTotal });
   }
 
   let discount = 0;
   if (mixQty >= MIX_RULE.minQty) {
     for (const item of items) {
-      if (item.product.mix === MIX_RULE.group) {
+      if (item.mix === MIX_RULE.group) {
         discount += Math.round(item.lineTotal * MIX_RULE.percentOff / 100);
       }
     }

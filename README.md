@@ -9,6 +9,7 @@ relative, so it runs from a subdirectory too.
 
 | File | In the nav | What's on it |
 | --- | --- | --- |
+| `finisher.html` | Finisher | The hero product's landing page: buy panel, variants, sizing, compare, FAQ |
 | `index.html` | Home | 3D hero, stats, photo strip, what the grip is, two doors into the catalogue, one testimonial, team CTA |
 | `grips.html` | Grips | Both SKUs, sizing guidance |
 | `bats.html` | Bats | All ten training bats, plus which-one-when |
@@ -135,6 +136,35 @@ module is imported only when the section is within 400px of the viewport, and
 only when the device passes a check for WebGL, no `prefers-reduced-motion` and
 no `Save-Data`. Everything else falls back to the product photo underneath,
 which is what ships in the markup.
+
+## Variants
+
+`finisher.html` is a single-product landing page, built because the client's
+read was that a focused page for the Finisher beats a catalogue — and because
+the catalogue had no way to express that a bat comes in more than one build.
+
+A variant SKU is `base/variantId`, e.g. `finisher/adult`. `resolve()` in
+`assets/js/catalog.js` turns either form into a name, price and image, and
+returns null for anything that is not a real combination — which is what keeps
+a stale localStorage line or a hand-typed SKU out of the cart. The checkout
+function lists variant SKUs flat in its own table, because that table is the
+only thing that decides what anyone is charged.
+
+The Finisher is the only product with variants so far. Adding an axis to
+another product is a data change in two files, not a code change.
+
+**The length axis ships empty on purpose.** The client said the site does not
+account for the different sizes they make, and they are right — but their
+lineup is not published anywhere reachable from here, and a wrong length on a
+buy button is a wrong order. So `lengths: []` renders a "tell us in the order
+notes" panel instead of inventing inches. Fill the array in
+`assets/js/catalog.js`, mirror it in `functions/create-checkout-session.js`,
+and the selector appears.
+
+Prices are confirmed off the client's own product cards: Youth $144.99,
+Adult $149.99, Custom $159.99. **Confirm the Adult mapping** — their catalogue
+lists "The Half Bat with PPG" at $149.99 and a separate "Finisher", and it is
+not certain from the screenshots whether those are the same build.
 
 ## Cart and payments
 

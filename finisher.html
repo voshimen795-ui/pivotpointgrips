@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The "Finisher" Half Bat | Pivot Point Grips</title>
+<meta name="description" content="A half bat that positions itself. The Pivot Point Grip sets the hands so every rep gives you real feedback. Youth, Adult and Custom builds.">
+<link rel="preload" href="assets/fonts/Archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/Inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/fonts/fonts.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<!-- Entrance animations start things hidden. Gate them on JS being able to
+     un-hide: without this class the page renders fully, just without motion. -->
+<script>document.documentElement.className += " js";</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap site-header__inner">
+    <a class="brand" href="index.html">
+      <span class="brand__mark" aria-hidden="true"></span>
+      <span class="brand__name">Pivot Point Grips</span>
+    </a>
+
+    <nav class="nav" data-nav aria-label="Main">
+      <a class="nav__link" href="finisher.html" aria-current="page">Finisher</a>
+      <a class="nav__link" href="grips.html">Grips</a>
+      <a class="nav__link" href="bats.html">Bats</a>
+      <a class="nav__link" href="team-sales.html">Team Sales</a>
+      <a class="nav__link" href="testimonials.html">Testimonials</a>
+      <a class="nav__link" href="installation.html">Installation</a>
+      <a class="nav__link" href="story.html">Our Story</a>
+    </nav>
+
+    <div class="header__actions">
+      <button class="cart-btn" type="button" data-cart-open aria-label="Cart, 0 items">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="cart-btn__count" data-cart-count>0</span>
+      </button>
+      <a class="btn btn--accent header__cta" href="finisher.html">Shop the Finisher</a>
+      <button class="nav-toggle" data-nav-toggle type="button" aria-expanded="false" aria-label="Menu">
+        <span class="nav-toggle__bars" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Cart drawer. Rendered by assets/js/cart.js from localStorage. -->
+<div class="cart-drawer" data-cart-drawer hidden>
+  <div class="cart-drawer__scrim" data-cart-scrim></div>
+  <aside class="cart-drawer__panel" role="dialog" aria-modal="true" aria-label="Cart">
+    <header class="cart-drawer__head">
+      <h2 class="cart-drawer__title">Your cart</h2>
+      <button class="cart-drawer__close" type="button" data-cart-close aria-label="Close cart">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18"/>
+        </svg>
+      </button>
+    </header>
+    <div class="cart-drawer__body" data-cart-body></div>
+    <div class="cart-drawer__foot" data-cart-foot hidden></div>
+    <p class="cart-status" data-cart-status role="status"></p>
+  </aside>
+</div>
+
+<main id="main">
+
+  <!-- ============================ BUY ============================ -->
+  <section class="section section--dark" style="padding-top:clamp(36px,5vw,64px)">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="index.html">Home</a>
+        <span aria-hidden="true">/</span>
+        <a href="bats.html">Bats</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Finisher</span>
+      </nav>
+
+      <div class="pdp" data-pdp>
+        <div class="pdp__stage">
+          <div class="bat3d" data-bat3d>
+            <div class="bat3d__fallback">
+              <img src="assets/img/bat-half-bat.png" data-pdp-img
+                   alt="The Finisher Half Bat with a Pivot Point Grip fitted."
+                   width="560" height="420">
+            </div>
+            <canvas class="bat3d__canvas" aria-hidden="true"></canvas>
+            <p class="bat3d__hint">Move to turn it</p>
+          </div>
+        </div>
+
+        <div class="pdp__buy" data-pdp-buy>
+          <p class="eyebrow pdp__eyebrow">Half bat &nbsp;/&nbsp; Daily work</p>
+          <h1 class="pdp__title">The &ldquo;Finisher&rdquo;<br>Half Bat</h1>
+          <p class="pdp__promise">
+            A half bat that positions itself. The Pivot Point Grip sets the
+            hands, so every rep gives you the feedback you actually came for
+            instead of a lesson in holding a half bat.
+          </p>
+
+          <div class="pdp__price-row">
+            <span class="pdp__price" data-pdp-price>$149.99</span>
+            <span class="pdp__price-note">Excl. sales tax</span>
+          </div>
+
+          <div class="opt">
+            <div class="opt__head">
+              <p class="opt__label" id="opt-model">Model</p>
+              <p class="opt__chosen" data-pdp-chosen>Adult &middot; $149.99</p>
+            </div>
+            <div class="opt__set" role="group" aria-labelledby="opt-model">
+            <button class="opt__btn" type="button"
+                    data-variant="finisher/youth"
+                    data-price="$144.99"
+                    data-label="Youth &middot; $144.99"
+                    data-bar="Finisher Half Bat &middot; Youth"
+                    data-img="assets/img/bat-youth-finisher.png"
+                    data-blurb="For hands under 7.25", measured palm to fingertip. Comes with the Youth grip fitted."
+                    aria-pressed="false">Youth</button>
+            <button class="opt__btn" type="button"
+                    data-variant="finisher/adult"
+                    data-price="$149.99"
+                    data-label="Adult &middot; $149.99"
+                    data-bar="Finisher Half Bat &middot; Adult"
+                    data-img="assets/img/bat-half-bat.png"
+                    data-blurb="For hands over 7.25", measured palm to fingertip. Comes with the Adult grip fitted."
+                    aria-pressed="true">Adult</button>
+            <button class="opt__btn" type="button"
+                    data-variant="finisher/custom"
+                    data-price="$159.99"
+                    data-label="Custom &middot; $159.99"
+                    data-bar="Finisher Half Bat &middot; Custom"
+                    data-img="assets/img/bat-custom-finisher.png"
+                    data-blurb="Adult build in your team colors, with your logo engraved on the barrel. Allow extra time."
+                    aria-pressed="false">Custom</button>
+            </div>
+            <p class="opt__blurb" data-pdp-blurb>For hands over 7.25&Prime;, measured palm to fingertip. Comes with the Adult grip fitted.</p>
+          </div>
+
+          <!--
+            The length axis. It renders this note while catalog.js ships an
+            empty `lengths` array, because a wrong length on a buy button is a
+            wrong order. Fill the array in and the selector replaces this.
+          -->
+          <div class="opt opt--pending">
+            <div class="opt__head">
+              <p class="opt__label">Length</p>
+            </div>
+            <div class="opt__set"></div>
+            <p class="opt__pending">
+              Tell us the length you want in the order notes, or
+              <a href="contact.html">ask us which one suits the hitter</a>.
+              Every length we build takes the same grip.
+            </p>
+          </div>
+
+          <button class="btn btn--accent pdp__add" type="button"
+                  data-pdp-add data-add-to-cart="finisher/adult">Add to cart</button>
+
+          <div class="trust">
+            <div class="trust__item">
+              <p class="trust__title">Grip already fitted</p>
+              <p class="trust__text">Nothing to install. Take it straight to the cage.</p>
+            </div>
+            <div class="trust__item">
+              <p class="trust__title">Mix &amp; match</p>
+              <p class="trust__text">Any two training bats take 10% off.</p>
+            </div>
+            <div class="trust__item">
+              <p class="trust__title">Made in the USA</p>
+              <p class="trust__text">Built to survive a full season of BP.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="marquee">
+    <p class="marquee__label">Swinging with PPG</p>
+    <div class="marquee__viewport">
+      <div class="marquee__track" data-marquee>
+        <span class="marquee__item">Big League Organizations</span>
+        <span class="marquee__dot" aria-hidden="true"></span>
+        <span class="marquee__item">Every Level of College</span>
+        <span class="marquee__dot" aria-hidden="true"></span>
+        <span class="marquee__item">High School &amp; Travel Ball</span>
+        <span class="marquee__dot" aria-hidden="true"></span>
+        <span class="marquee__item">USA &amp; Canada</span>
+        <span class="marquee__dot" aria-hidden="true"></span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ==================== THE ARGUMENT ==================== -->
+  <section class="section section--cream">
+    <div class="wrap">
+      <div class="feature" data-reveal>
+        <figure class="feature__media" style="margin:0">
+          <div class="frame frame--portrait frame--arch media-reveal">
+            <img src="assets/img/athlete-jace-bohrofen.jpg"
+                 alt="Jace Bohrofen at the plate in an Arkansas uniform."
+                 loading="lazy" width="388" height="584">
+            <figcaption class="frame__caption">Photo &mdash; Jace Bohrofen</figcaption>
+          </div>
+          <p class="figure-note">PPG&rsquo;s first athlete ambassador</p>
+        </figure>
+
+        <div>
+          <p class="eyebrow eyebrow--dim">Why this one</p>
+          <blockquote class="quote-xl">
+            &ldquo;I previously used traditional half bats but I would always
+            struggle with positioning the half bat correctly.&rdquo;
+          </blockquote>
+          <div class="prose lede">
+            <p>
+              &ldquo;So I found myself not using it consistently. The PPG Finisher
+              helped teach me the proper bat grip and automatically positioned
+              the half bat so I would receive the correct feedback, every swing.
+              The feedback from the ball flight became clearer once I got my
+              wrist in the right position.&rdquo;
+            </p>
+            <p>
+              &ldquo;The Finisher Half Bat has been my everyday training tool
+              because it reinforces the proper grip, easy to use, and helps
+              groove my swing by giving me the feedback I need to flush the ball
+              every swing.&rdquo;
+            </p>
+          </div>
+          <div class="attribution">
+            <p class="attribution__name">Jace Bohrofen</p>
+            <p class="attribution__role">University of Arkansas</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== HOW IT WORKS ==================== -->
+  <section class="section section--dark">
+    <div class="wrap">
+      <div class="split" data-reveal>
+        <div>
+          <p class="eyebrow">What does the positioning</p>
+          <h2 class="h2">Three things,<br>one piece</h2>
+          <p class="lede" style="margin-top:clamp(20px,2.6vw,30px)">
+            A half bat only teaches you something if your hands are in the right
+            place. These are what put them there and keep them there.
+          </p>
+        </div>
+
+        <ul class="feature-list" style="margin-top:0">
+          <li>
+            <span class="feature-list__num">01</span>
+            <div>
+              <p class="feature-list__title">Power Grooves&trade;</p>
+              <p class="feature-list__text">Hand alignment that repeats itself, swing after swing. You cannot drift back into the old grip without noticing.</p>
+            </div>
+          </li>
+          <li>
+            <span class="feature-list__num">02</span>
+            <div>
+              <p class="feature-list__title">Ergonomic palm pads</p>
+              <p class="feature-list__text">Contoured to the hands, so you grip with the whole hand rather than the fingers. More surface on the bat, more control of the barrel.</p>
+            </div>
+          </li>
+          <li>
+            <span class="feature-list__num">03</span>
+            <div>
+              <p class="feature-list__title">Integrated knob</p>
+              <p class="feature-list__text">Built into the grip rather than bolted under it. Improves range of motion and barrel accuracy.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SPECS &amp; SIZING ==================== -->
+  <section class="section section--cream">
+    <div class="wrap">
+      <div class="split" data-reveal style="align-items:start">
+        <div>
+          <p class="eyebrow eyebrow--dim">Sizing</p>
+          <h2 class="h2">Measure once,<br>then order</h2>
+          <p class="lede" style="margin-top:clamp(20px,2.6vw,30px)">
+            The model you pick is about the hand, not the hitter&rsquo;s age.
+            Measure from the bottom of the palm to the tip of the longest
+            finger.
+          </p>
+          <p style="margin-top:clamp(24px,3vw,34px)">
+            <a class="btn btn--outline-ink" href="faq.html">Read the FAQ</a>
+          </p>
+        </div>
+
+        <table class="spec-table">
+          <caption>The Finisher &mdash; at a glance</caption>
+          <tbody>
+            <tr><th scope="row">Youth</th><td>Hands under 7.25&Prime;. Youth grip fitted. $144.99</td></tr>
+            <tr><th scope="row">Adult</th><td>Hands over 7.25&Prime;. Adult grip fitted. $149.99</td></tr>
+            <tr><th scope="row">Custom</th><td>Adult build, team colors, logo engraved. $159.99</td></tr>
+            <tr><th scope="row">Lengths</th><td>Several. Tell us which in the order notes &mdash; or ask and we&rsquo;ll match it to the hitter.</td></tr>
+            <tr><th scope="row">Grip</th><td>Pivot Point Grip, already installed. Nothing to fit.</td></tr>
+            <tr><th scope="row">Use</th><td>Tee, front toss, machine, BP. Real baseballs.</td></tr>
+            <tr><th scope="row">Made</th><td>USA.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== COMPARE ==================== -->
+  <section class="section section--cream" style="padding-top:0">
+    <div class="wrap">
+      <div class="section-head" data-reveal>
+        <h2 class="h2">Which one,<br>and when</h2>
+        <p class="section-head__note">Three jobs</p>
+      </div>
+
+      <div class="compare" data-reveal>
+        <article class="compare-card compare-card--this">
+          <img class="compare-card__thumb" src="assets/img/bat-half-bat.png" alt="" loading="lazy" width="560" height="420">
+          <p class="compare-card__job">Daily &middot; You are here</p>
+          <h3 class="h3">The Finisher</h3>
+          <p class="compare-card__text">
+            The everyday one. Positions itself, reinforces the grip, gives clean
+            feedback on every rep.
+          </p>
+          <div class="compare-card__foot">
+            <span class="price">From $144.99</span>
+          </div>
+        </article>
+
+        <article class="compare-card">
+          <img class="compare-card__thumb" src="assets/img/bat-sledge.png" alt="" loading="lazy" width="560" height="420">
+          <p class="compare-card__job">BP &middot; Game-bat weight</p>
+          <h3 class="h3">The Sledge</h3>
+          <p class="compare-card__text">
+            Heavier than the Finisher and closer to game weight, so you can hit
+            real baseballs off a machine and read the flight straight away.
+          </p>
+          <div class="compare-card__foot">
+            <span class="price">$199.99</span>
+            <a class="btn btn--text" href="bats.html">Shop &rarr;</a>
+          </div>
+        </article>
+
+        <article class="compare-card">
+          <img class="compare-card__thumb" src="assets/img/bat-nocast.png" alt="" loading="lazy" width="560" height="420">
+          <p class="compare-card__job">Fix a fault &middot; Casting</p>
+          <h3 class="h3">NoCastBat</h3>
+          <p class="compare-card__text">
+            Game-weight and shortened, so the barrel stays connected through the
+            swing and casting stops paying off.
+          </p>
+          <div class="compare-card__foot">
+            <span class="price">$149.99</span>
+            <a class="btn btn--text" href="bats.html">Shop &rarr;</a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== FAQ ==================== -->
+  <section class="section section--dark">
+    <div class="wrap">
+      <div class="section-head" data-reveal>
+        <h2 class="h2">Before you<br>order</h2>
+        <p class="section-head__note">More at info@ppg</p>
+      </div>
+
+      <div class="faq" data-reveal>
+        <details open>
+          <summary>Youth or Adult &mdash; which do I need?</summary>
+          <p>
+            Measure the hitter&rsquo;s hand from the bottom of the palm to the tip
+            of the longest finger. Over 7.25&Prime; takes the Adult grip; anything
+            smaller takes the Youth. It is about hand size, not age.
+          </p>
+        </details>
+        <details>
+          <summary>What lengths does it come in?</summary>
+          <p>
+            More than one, and every length takes the same grip. Put the length
+            you want in the order notes, or
+            <a href="contact.html">ask us</a> and we will match it to the hitter.
+          </p>
+        </details>
+        <details>
+          <summary>Do I have to install the grip?</summary>
+          <p>
+            No. The Finisher ships with the Pivot Point Grip already fitted.
+            Installing is only for putting a grip on a bat you already own &mdash;
+            see the <a href="installation.html">installation guide</a> for that.
+          </p>
+        </details>
+        <details>
+          <summary>Can I hit real baseballs with it?</summary>
+          <p>
+            Yes. Tee, front toss, machine or BP. The Sledge is the heavier
+            option if you want something closer to game weight.
+          </p>
+        </details>
+        <details>
+          <summary>How long does a custom take?</summary>
+          <p>
+            Longer than a stock build &mdash; the barrel is finished in your colors
+            and engraved. <a href="contact.html">Get in touch</a> if you have a
+            date to hit.
+          </p>
+        </details>
+        <details>
+          <summary>Is there a discount for more than one?</summary>
+          <p>
+            Two or more training bats take 10% off those lines, applied
+            automatically in the cart. Teams get their own pricing &mdash; see
+            <a href="team-sales.html">team sales</a>.
+          </p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="section cta-band">
+    <div class="wrap cta-band__grid">
+      <div>
+        <p class="eyebrow">For coaches</p>
+        <h2 class="cta-band__title">Make it<br>mandatory<br>in your<br>program.</h2>
+      </div>
+
+      <div>
+        <div class="spec-list">
+          <div class="spec">
+            <p class="spec__title">Team identity</p>
+            <p class="spec__text">Customize bat colors and engrave your team logo.</p>
+          </div>
+          <div class="spec">
+            <p class="spec__title">Bulk discounts</p>
+            <p class="spec__text">Special pricing for team orders.</p>
+          </div>
+          <div class="spec">
+            <p class="spec__title">American-made</p>
+            <p class="spec__text">Durable, top-tier training bats.</p>
+          </div>
+        </div>
+
+        <div class="cta-band__actions">
+          <a class="btn btn--ink" href="team-sales.html">Get team pricing</a>
+          <a class="btn btn--outline-ink" href="testimonials.html">Read the testimonials</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Mirrors the buy panel once it scrolls off. -->
+<div class="buy-bar" data-buy-bar>
+  <div class="buy-bar__info">
+    <p class="buy-bar__name" data-bar-name>Finisher Half Bat &middot; Adult</p>
+    <p class="buy-bar__price" data-bar-price>$149.99</p>
+  </div>
+  <button class="btn btn--accent" type="button"
+          data-bar-add data-add-to-cart="finisher/adult">Add to cart</button>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap footer-shout">
+    <p class="footer-shout__title">
+      Every swing starts<br>with a
+      <span class="accent">Pivot Point<span class="footer-shout__tm">&trade;</span></span>
+    </p>
+  </div>
+
+  <div class="wrap">
+    <div class="footer-cols">
+      <div class="footer-col">
+        <p class="footer-col__title">Shop</p>
+        <ul>
+          <li><a href="finisher.html">The Finisher</a></li>
+          <li><a href="grips.html">Grips</a></li>
+          <li><a href="bats.html">Bats</a></li>
+          <li><a href="team-sales.html">Team Sales</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p class="footer-col__title">Learn</p>
+        <ul>
+          <li><a href="installation.html">Grip Installation</a></li>
+          <li><a href="story.html">Our Story</a></li>
+          <li><a href="testimonials.html">Testimonials</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p class="footer-col__title">Info</p>
+        <ul>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="#terms">Terms and Conditions</a></li>
+          <li><a href="#returns">Returns</a></li>
+          <li><a href="#blog">Blog</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p class="footer-col__title">Contact</p>
+        <p><a href="mailto:info@pivotpointgrips.com">info@pivotpointgrips.com</a></p>
+        <div class="socials">
+          <a href="https://www.facebook.com/pivotpointgrips/" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4v-2c0-.6.4-1 1-1z"/></svg></a>
+          <a href="https://www.instagram.com/pivotpointgrips/" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+          <a href="https://www.tiktok.com/@pivotpointgrips" aria-label="TikTok"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 3h3c.3 2 1.6 3.4 4 3.7V10c-1.6 0-3-.5-4-1.3V15a6 6 0 1 1-6-6c.3 0 .7 0 1 .1v3.1a3 3 0 1 0 2 2.8z"/></svg></a>
+          <a href="https://x.com/pivotpointgrips" aria-label="X"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 3h3l-6.6 7.5L21.6 21h-6l-4.4-5.8L6 21H3l7-8-7-10h6.2l4 5.4zm-1 16h1.7L7.6 4.8H5.8z"/></svg></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bar">
+      <span>&copy; 2026 Pivot Point Grips</span>
+      <span>Topeka, Kansas &nbsp;&middot;&nbsp; Made in the USA</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/main.js" defer></script>
+<script type="module" src="assets/js/cart.js"></script>
+</body>
+</html>

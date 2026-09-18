@@ -4,7 +4,7 @@
  * quantities; the serverless function prices the order from its own table and
  * creates the Stripe Checkout Session. See functions/create-checkout-session.js.
  */
-import { PRODUCTS, MIX_RULE, money, price } from './catalog.js';
+import { MIX_RULE, money, price, resolve } from './catalog.js';
 
 const KEY = 'ppg.cart.v1';
 const ENDPOINT = '/.netlify/functions/create-checkout-session';
@@ -19,7 +19,7 @@ function load() {
     if (!Array.isArray(raw)) return [];
     // Drop anything that is no longer a real SKU — catalogues change.
     return raw
-      .filter((l) => l && PRODUCTS[l.sku] && Number.isFinite(l.qty) && l.qty > 0)
+      .filter((l) => l && resolve(l.sku) && Number.isFinite(l.qty) && l.qty > 0)
       .map((l) => ({ sku: l.sku, qty: Math.min(99, Math.floor(l.qty)) }));
   } catch (err) {
     return [];
@@ -39,7 +39,7 @@ function count() {
 }
 
 function add(sku, qty = 1) {
-  if (!PRODUCTS[sku]) return;
+  if (!resolve(sku)) return;
   const found = lines.find((l) => l.sku === sku);
   if (found) found.qty = Math.min(99, found.qty + qty);
   else lines.push({ sku, qty });
@@ -110,14 +110,14 @@ function renderDrawer() {
 
   body.innerHTML = items.map((it) => (
     '<article class="cart-line">' +
-      '<img class="cart-line__img" src="assets/img/' + esc(it.product.img) + '" alt="" width="80" height="60" loading="lazy">' +
+      '<img class="cart-line__img" src="assets/img/' + esc(it.img) + '" alt="" width="80" height="60" loading="lazy">' +
       '<div class="cart-line__main">' +
-        '<p class="cart-line__name">' + esc(it.product.name) + '</p>' +
-        '<p class="cart-line__unit">' + money(it.product.cents) + ' each</p>' +
+        '<p class="cart-line__name">' + esc(it.name) + '</p>' +
+        '<p class="cart-line__unit">' + money(it.cents) + ' each</p>' +
         '<div class="qty">' +
-          '<button type="button" class="qty__btn" data-qty-down="' + esc(it.sku) + '" aria-label="Decrease quantity of ' + esc(it.product.name) + '">&minus;</button>' +
+          '<button type="button" class="qty__btn" data-qty-down="' + esc(it.sku) + '" aria-label="Decrease quantity of ' + esc(it.name) + '">&minus;</button>' +
           '<span class="qty__value" aria-live="polite">' + it.qty + '</span>' +
-          '<button type="button" class="qty__btn" data-qty-up="' + esc(it.sku) + '" aria-label="Increase quantity of ' + esc(it.product.name) + '">+</button>' +
+          '<button type="button" class="qty__btn" data-qty-up="' + esc(it.sku) + '" aria-label="Increase quantity of ' + esc(it.name) + '">+</button>' +
           '<button type="button" class="qty__remove" data-qty-remove="' + esc(it.sku) + '">Remove</button>' +
         '</div>' +
       '</div>' +
