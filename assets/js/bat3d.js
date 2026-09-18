@@ -328,7 +328,7 @@ export function mount(container, opts = {}) {
   // Only a slight tilt toward the camera: more than this and perspective
   // drops the knob end out of the bottom of the frame.
   const REST_X = 0.06, REST_Z = -0.30;
-  const SPIN_RATE = 0.52;                // rad/s — a full turn every ~12s
+  const SPIN_RATE = 0.78;                // rad/s — a full turn every ~8s
   const DAMP = 6;                        // settle rate for pointer follow
   const FLOAT_AMP = 0.5;                 // gentle vertical drift, world units
   const FLOAT_RATE = 0.42;

@@ -43,6 +43,24 @@
     });
   }
 
+  /* --- Header scroll state ----------------------------------------------
+   * Adds a stronger bottom edge once the page has moved, so the sticky bar
+   * reads as a surface sitting over the content rather than part of it.
+   */
+  var header = document.querySelector('.site-header');
+
+  if (header) {
+    var stuck = false;
+    var onScrollHeader = function () {
+      var next = window.scrollY > 8;
+      if (next === stuck) return;
+      stuck = next;
+      header.classList.toggle('is-stuck', stuck);
+    };
+    window.addEventListener('scroll', onScrollHeader, { passive: true });
+    onScrollHeader();
+  }
+
   /* --- Testimonial filter ----------------------------------------------- */
   var chips = document.querySelectorAll('[data-filter]');
   var filterables = document.querySelectorAll('[data-role]');

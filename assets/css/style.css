@@ -11,6 +11,7 @@
   --orange:      #e68a18;  /* primary — sampled from the live site nav/links */
   --orange-hi:   #ff9d2a;  /* hover / neon lift                              */
   --ember:       #e25600;  /* deep product orange — sampled from the grip    */
+  --accent-ink:  #b34700;  /* the accent as TEXT on cream/paper — 4.8:1     */
   --gold:        #f7c948;  /* logo highlight                                 */
 
   /* Neutrals */
@@ -48,6 +49,22 @@
   --space-7: 80px;
 
   --radius: 4px;
+
+  /* Mono label system. Every uppercase mono label draws from these, so the
+     tracking can never drift between an eyebrow and a footer heading again. */
+  --label-size: clamp(12px, 1vw, 13px);  /* content labels                  */
+  --label-size-xs: 11px;                 /* overlay chrome sitting on photos */
+  --label-track: .14em;
+
+  /* Section rhythm */
+  --section-y-sm: clamp(48px, 6vw, 92px);
+
+  /* Minimum interactive hit area */
+  --tap: 44px;
+
+  /* A hairline that is actually visible on dark — --ink-line is for dividers,
+     this one is for control borders that have to read as affordances. */
+  --line-control: #4c4a47;
 
   /* Motion. One easing curve, three durations. */
   --ease: cubic-bezier(.22, 1, .36, 1);
@@ -125,13 +142,27 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* --- Type scale --------------------------------------------------------- */
 .eyebrow {
   font-family: var(--font-mono);
-  font-size: clamp(11px, 1.05vw, 13px);
-  letter-spacing: .18em;
+  font-size: var(--label-size);
+  letter-spacing: var(--label-track);
   text-transform: uppercase;
   color: var(--orange);
   margin: 0 0 clamp(18px, 2.4vw, 32px);
 }
 .eyebrow--dim { color: var(--on-light-dim); }
+
+/* The display faces run at -.026em to -.032em, which closes up the word gaps
+   ("IN YOUR" reading as "INYOUR"). Put the space back without loosening the
+   letterfit. */
+.display,
+.display--hero,
+.h2,
+.h3,
+.quote-xl,
+.cta-band__title,
+.footer-shout__title,
+.pullquote__text,
+.cart-empty,
+.cart-drawer__title { word-spacing: .08em; }
 
 .display {
   font-family: var(--font-display);
@@ -214,18 +245,47 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .btn--ghost {
   background: transparent;
   color: var(--on-dark);
-  border-color: var(--ink-line);
+  border-color: var(--line-control);
 }
-.btn--ghost:hover { border-color: var(--orange); color: var(--orange); }
+.btn--ghost:hover { border-color: var(--orange); color: var(--orange); background: rgba(230, 138, 24, .08); }
+
+/* Pressed state, shared by every button. */
+.btn:active { transform: translateY(0); }
+
+/* Tertiary: a text link with an arrow, no box. */
+.btn--text {
+  padding: 10px 0;
+  border: 0;
+  background: none;
+  color: var(--orange);
+}
+.btn--text:hover { color: var(--orange-hi); }
+
+/* Every button clears the minimum hit area. */
+.btn, .add-btn, .chip { min-height: var(--tap); }
 
 /* --- Header ------------------------------------------------------------- */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(16, 16, 16, .92);
-  backdrop-filter: blur(12px);
+  background: rgba(16, 16, 16, .96);
+  backdrop-filter: blur(14px) saturate(1.2);
   border-bottom: 1px solid var(--ink-line);
+  transition: box-shadow var(--dur-base) var(--ease),
+              border-color var(--dur-base) var(--ease);
+}
+
+/* No backdrop-filter (older Firefox, some in-app browsers) — go fully solid
+   rather than letting the page show through. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .site-header { background: var(--ink); }
+}
+
+/* main.js adds this past the first 8px of scroll. */
+.site-header.is-stuck {
+  border-bottom-color: #343434;
+  box-shadow: 0 10px 30px -18px rgba(0, 0, 0, .9);
 }
 
 .site-header__inner {
@@ -242,6 +302,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   gap: 12px;
   flex: none;
   margin-right: auto;
+  min-height: var(--tap);
 }
 .brand__mark {
   width: 30px;
@@ -372,7 +433,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 
 /* --- Page hero ---------------------------------------------------------- */
-.hero { padding-block: clamp(56px, 8vw, 120px) clamp(48px, 6vw, 92px); }
+.hero { padding-block: var(--section-y) var(--section-y-sm); }
 .hero__grid {
   display: grid;
   grid-template-columns: minmax(0, 1.35fr) minmax(0, .65fr);
@@ -412,7 +473,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   border-color: var(--orange);
   color: var(--ink);
 }
-.chip[aria-pressed="true"] .chip__count { color: rgba(16, 16, 16, .62); }
+.chip[aria-pressed="true"] .chip__count { color: rgba(16, 16, 16, .8); }
 
 /* --- Marquee ------------------------------------------------------------ */
 .marquee {
@@ -430,9 +491,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
   padding: 4px var(--gutter) 4px var(--gutter);
   border-right: 1px solid var(--ink-line);
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: var(--label-size);
   line-height: 1.5;
-  letter-spacing: .16em;
+  letter-spacing: var(--label-track);
   text-transform: uppercase;
   color: var(--on-dark-dim);
   width: 15ch;
@@ -599,8 +660,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
   justify-items: center;
   gap: 10px;
   font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: .2em;
+  font-size: var(--label-size-xs);
+  letter-spacing: var(--label-track);
   text-transform: uppercase;
   color: var(--on-dark-dim);
 }
@@ -660,8 +721,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
   backdrop-filter: blur(6px);
   color: var(--cream);
   font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: .14em;
+  font-size: var(--label-size-xs);
+  letter-spacing: var(--label-track);
   text-transform: uppercase;
   border-radius: 2px;
   transition: transform .7s var(--ease) .25s, opacity .7s var(--ease) .25s;
@@ -730,8 +791,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .figure-note {
   margin: 14px 0 0;
   font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: .14em;
+  font-size: var(--label-size);
+  letter-spacing: var(--label-track);
   text-transform: uppercase;
   color: var(--on-light-dim);
 }
@@ -842,8 +903,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .tool-card__meta {
   font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: .12em;
+  font-size: var(--label-size);
+  letter-spacing: var(--label-track);
   text-transform: uppercase;
   color: var(--on-dark-dim);
 }
@@ -923,9 +984,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .section-head__note {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: var(--label-size);
   line-height: 1.5;
-  letter-spacing: .16em;
+  letter-spacing: var(--label-track);
   text-transform: uppercase;
   color: var(--on-light-dim);
   text-align: right;
@@ -960,8 +1021,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
   background: var(--ink);
   color: var(--cream);
   font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: .14em;
+  font-size: var(--label-size);
+  letter-spacing: var(--label-track);
   text-transform: uppercase;
   border-radius: 2px;
   margin-bottom: 20px;
@@ -1007,7 +1068,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   padding: 40px 0;
   font-family: var(--font-mono);
   font-size: 13px;
-  letter-spacing: .1em;
+  letter-spacing: var(--label-track);
   text-transform: uppercase;
   color: var(--on-light-dim);
 }
@@ -1022,7 +1083,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 @media (max-width: 900px) { .cta-band__grid { grid-template-columns: 1fr; } }
 
-.cta-band .eyebrow { color: rgba(16, 16, 16, .72); }
+.cta-band .eyebrow { color: rgba(16, 16, 16, .86); }
 .cta-band__title {
   font-family: var(--font-display);
   font-weight: 800;
@@ -1033,13 +1094,13 @@ button { font: inherit; color: inherit; cursor: pointer; }
   margin: 0;
 }
 
-.spec-list { border-top: 1px solid rgba(16, 16, 16, .3); margin-bottom: 22px; }
+.spec-list { border-top: 1px solid rgba(16, 16, 16, .42); margin-bottom: 22px; }
 .spec {
   padding: 16px 0;
-  border-bottom: 1px solid rgba(16, 16, 16, .3);
+  border-bottom: 1px solid rgba(16, 16, 16, .42);
 }
 .spec__title { margin: 0; font-size: 16px; font-weight: 700; }
-.spec__text { margin: 3px 0 0; font-size: 15px; color: rgba(16, 16, 16, .76); }
+.spec__text { margin: 3px 0 0; font-size: 16px; color: rgba(16, 16, 16, .86); }
 
 .cta-band__actions { display: grid; gap: 12px; }
 
@@ -1169,17 +1230,23 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .product-grid--tall .product-card__media { aspect-ratio: 3 / 4; }
 .product-card__body { padding: 18px 20px 22px; display: flex; flex-direction: column; flex: 1; }
 .product-card__name { margin: 0 0 10px; font-size: 15px; font-weight: 700; line-height: 1.35; }
+/* The single price style. --ember on cream, where --orange loses contrast. */
+.price,
 .product-card__price {
   margin: auto 0 0;
   font-family: var(--font-mono);
   font-size: 15px;
+  font-weight: 700;
+  letter-spacing: .01em;
   color: var(--orange);
 }
+.section--cream .price,
+.voice-card .price { color: var(--accent-ink); }
 .product-card__badge {
   margin: 8px 0 0;
   font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: .12em;
+  font-size: var(--label-size);
+  letter-spacing: var(--label-track);
   text-transform: uppercase;
   color: var(--on-dark-dim);
 }
@@ -1210,9 +1277,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
   margin-top: clamp(20px, 2.4vw, 28px);
   font-family: var(--font-mono);
   font-size: 13px;
-  letter-spacing: .08em;
+  letter-spacing: var(--label-track);
   text-transform: uppercase;
-  color: var(--ember);
+  color: var(--accent-ink);
 }
 .door__cta svg { transition: transform var(--dur-base) var(--ease); }
 .door:hover .door__cta svg { transform: translateX(5px); }
@@ -1229,7 +1296,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* --- Footer ------------------------------------------------------------- */
 .site-footer { background: var(--ink); border-top: 1px solid var(--ink-line); }
 .footer-shout {
-  padding-block: clamp(50px, 7vw, 100px) clamp(34px, 4vw, 56px);
+  padding-block: var(--section-y-sm) clamp(34px, 4vw, 56px);
 }
 .footer-shout__title {
   font-family: var(--font-display);
@@ -1250,26 +1317,36 @@ button { font: inherit; color: inherit; cursor: pointer; }
   padding-block: clamp(34px, 4vw, 52px);
   border-top: 1px solid var(--ink-line);
 }
+/* Two columns on a phone: four stacked link lists make the footer endless. */
+@media (max-width: 640px) {
+  .footer-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5) var(--space-4); }
+}
+
 .footer-col__title {
   margin: 0 0 16px;
   font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: .16em;
+  font-size: var(--label-size);
+  letter-spacing: var(--label-track);
   text-transform: uppercase;
   color: var(--on-dark-dim);
 }
 .footer-col ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
 .footer-col a {
-  font-size: 15px;
+  font-size: 16px;
+  overflow-wrap: anywhere;
   color: var(--on-dark);
   transition: color .2s var(--ease);
 }
 .footer-col a:hover { color: var(--orange); }
-.footer-col p { margin: 0 0 10px; font-size: 15px; color: var(--on-dark-dim); }
+.footer-col p:not(.footer-col__title) {
+  margin: 0 0 10px;
+  font-size: 16px;
+  color: var(--on-dark-dim);
+}
 
 .socials { display: flex; gap: 10px; margin-top: 4px; }
 .socials a {
-  width: 38px; height: 38px;
+  width: var(--tap); height: var(--tap);
   display: grid;
   place-items: center;
   border: 1px solid var(--ink-line);
@@ -1287,8 +1364,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
   padding-block: 22px 30px;
   border-top: 1px solid var(--ink-line);
   font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: .1em;
+  font-size: var(--label-size);
+  letter-spacing: var(--label-track);
   text-transform: uppercase;
   color: var(--on-dark-dim);
 }
@@ -1305,8 +1382,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .install-kicker {
   margin: 0 0 16px;
   font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: .16em;
+  font-size: var(--label-size);
+  letter-spacing: var(--label-track);
   text-transform: uppercase;
   color: var(--on-dark-dim);
 }
@@ -1424,8 +1501,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .field { display: grid; gap: 8px; }
 .field label {
   font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: .14em;
+  font-size: var(--label-size);
+  letter-spacing: var(--label-track);
   text-transform: uppercase;
   color: var(--on-dark-dim);
 }
@@ -1500,8 +1577,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
   transform: translateX(-50%);
   z-index: 4;
   font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: .18em;
+  font-size: var(--label-size-xs);
+  letter-spacing: var(--label-track);
   text-transform: uppercase;
   color: var(--on-dark-dim);
   opacity: 0;
@@ -1537,8 +1614,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .hotspot__label {
   font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: .14em;
+  font-size: var(--label-size-xs);
+  letter-spacing: var(--label-track);
   text-transform: uppercase;
   color: var(--on-dark);
   background: rgba(16, 16, 16, .78);
@@ -1550,7 +1627,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* --- Inner page hero ---------------------------------------------------- */
 .page-hero {
   position: relative;
-  padding-block: clamp(56px, 8vw, 116px) clamp(40px, 5vw, 76px);
+  padding-block: var(--section-y) var(--section-y-sm);
   border-bottom: 1px solid var(--ink-line);
   overflow: hidden;
 }
@@ -1574,15 +1651,24 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 .crumbs {
   display: flex;
+  align-items: center;
   gap: 10px;
-  margin: 0 0 clamp(16px, 2.2vw, 28px);
+  margin: -10px 0 clamp(10px, 1.6vw, 20px);
   font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: .16em;
+  font-size: var(--label-size);
+  letter-spacing: var(--label-track);
   text-transform: uppercase;
   color: var(--on-dark-dim);
 }
-.crumbs a { transition: color var(--dur-fast) var(--ease); }
+.crumbs a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--tap);
+  min-height: var(--tap);
+  transition: color var(--dur-fast) var(--ease);
+}
+.crumbs span { display: inline-flex; align-items: center; min-height: var(--tap); }
 .crumbs a:hover { color: var(--orange); }
 .crumbs span[aria-current] { color: var(--orange); }
 
@@ -1593,8 +1679,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
   padding-bottom: var(--space-3);
   border-bottom: 1px solid var(--ink-line);
   font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: .18em;
+  font-size: var(--label-size);
+  letter-spacing: var(--label-track);
   text-transform: uppercase;
   color: var(--orange);
 }
@@ -1632,8 +1718,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 @media (max-width: 640px) { .specimen { grid-template-columns: 1fr; gap: var(--space-2); } }
 .specimen__label {
   font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: .14em;
+  font-size: var(--label-size);
+  letter-spacing: var(--label-track);
   text-transform: uppercase;
   color: var(--on-dark-dim);
 }
@@ -1681,18 +1767,18 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .add-btn {
   width: 100%;
   margin-top: var(--space-3);
-  padding: 12px 16px;
-  font-size: 14px;
+  padding: 13px 16px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--on-dark);
   background: transparent;
-  border: 1px solid var(--ink-line);
+  border: 1px solid var(--line-control);
   border-radius: var(--radius);
   transition: background-color var(--dur-fast) var(--ease),
               color var(--dur-fast) var(--ease),
               border-color var(--dur-fast) var(--ease);
 }
-.add-btn:hover { border-color: var(--orange); color: var(--orange); }
+.add-btn:hover { border-color: var(--orange); color: var(--orange); background: rgba(230, 138, 24, .08); }
 .add-btn.is-added {
   background: var(--orange);
   border-color: var(--orange);
@@ -1747,7 +1833,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   text-transform: uppercase;
 }
 .cart-drawer__close {
-  width: 40px; height: 40px;
+  width: var(--tap); height: var(--tap);
   display: grid;
   place-items: center;
   background: transparent;
@@ -1802,7 +1888,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 .qty { display: flex; align-items: center; gap: 2px; }
 .qty__btn {
-  width: 28px; height: 28px;
+  width: 38px; height: 38px;
   display: grid;
   place-items: center;
   font-size: 15px;
@@ -1821,7 +1907,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .qty__remove {
   margin-left: var(--space-2);
-  padding: 0;
+  padding: 12px 6px;
   background: none;
   border: 0;
   font-size: 12px;
