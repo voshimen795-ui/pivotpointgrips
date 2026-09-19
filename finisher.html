@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The "Finisher" Half Bat | Pivot Point Grips</title>
 <meta name="description" content="A half bat that positions itself. The Pivot Point Grip sets the hands so every rep gives you real feedback. Youth, Adult and Custom builds.">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#101010">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Pivot Point Grips">
+<meta property="og:title" content="The "Finisher" Half Bat | Pivot Point Grips">
+<meta property="og:description" content="A half bat that positions itself. The Pivot Point Grip sets the hands so every rep gives you real feedback. Youth, Adult and Custom builds.">
+<meta property="og:image" content="assets/img/hero-batter.jpg">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="assets/fonts/Archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/Inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/fonts/fonts.css">
@@ -79,19 +87,10 @@
       </nav>
 
       <div class="pdp" data-pdp>
-        <div class="pdp__stage">
-          <div class="bat3d" data-bat3d>
-            <div class="bat3d__fallback">
-              <img src="assets/img/bat-half-bat.png" data-pdp-img
-                   alt="The Finisher Half Bat with a Pivot Point Grip fitted."
-                   width="560" height="420">
-            </div>
-            <canvas class="bat3d__canvas" aria-hidden="true"></canvas>
-            <p class="bat3d__hint">Move to turn it</p>
-          </div>
-        </div>
-
-        <div class="pdp__buy" data-pdp-buy>
+        <!-- Its own grid child rather than part of the buy panel: the CSS
+             puts it above the panel on a wide screen and above the stage on
+             a narrow one, without the markup being written twice. -->
+        <div class="pdp__head">
           <p class="eyebrow pdp__eyebrow">Half bat &nbsp;/&nbsp; Daily work</p>
           <h1 class="pdp__title">The &ldquo;Finisher&rdquo;<br>Half Bat</h1>
           <p class="pdp__promise">
@@ -100,6 +99,84 @@
             instead of a lesson in holding a half bat.
           </p>
 
+          <div class="pdp__proof">
+            <p class="pdp__proof-quote">
+              &ldquo;My everyday training tool.&rdquo;
+            </p>
+            <p class="pdp__proof-who">
+              Jace Bohrofen &middot;
+              <a href="testimonials.html">University of Arkansas</a>
+            </p>
+          </div>
+        </div>
+
+        <div class="pdp__stage">
+          <div class="bat3d" data-bat3d data-view="3d">
+            <div class="bat3d__fallback">
+              <img src="assets/img/bat-half-bat.png" data-pdp-img
+                   alt="The Finisher Half Bat with a Pivot Point Grip fitted."
+                   width="560" height="420">
+            </div>
+            <canvas class="bat3d__canvas" aria-hidden="true"></canvas>
+
+            <!-- Anchored in bat space and reprojected every frame by
+                 bat3d.js, so each label rides its own part of the grip. -->
+            <div class="hotspot" data-hotspot="0.7" aria-hidden="true">
+              <span class="hotspot__dot"></span>
+              <span class="hotspot__label">Integrated knob</span>
+            </div>
+            <div class="hotspot" data-hotspot="4.6" aria-hidden="true">
+              <span class="hotspot__dot"></span>
+              <span class="hotspot__label">Power Grooves&trade;</span>
+            </div>
+            <div class="hotspot" data-hotspot="9.4" aria-hidden="true">
+              <span class="hotspot__dot"></span>
+              <span class="hotspot__label">Palm pads</span>
+            </div>
+
+            <p class="bat3d__hint">Move to turn it</p>
+          </div>
+
+          <div class="gallery" role="group" aria-label="Product views">
+            <button class="gallery__thumb" type="button"
+                    data-gv="3d" aria-pressed="true"
+                    aria-label="Turntable &mdash; rotate the bat">
+              <span class="gallery__spin" aria-hidden="true">Turn it</span>
+            </button>
+            <button class="gallery__thumb" type="button"
+                    data-gv="photo" data-img="assets/img/bat-half-bat.png" data-of="adult"
+                    data-alt="The Adult Finisher Half Bat with a Pivot Point Grip fitted."
+                    aria-pressed="false" aria-label="Adult build">
+              <img src="assets/img/bat-half-bat.png" alt="" loading="lazy" width="78" height="78">
+            </button>
+            <button class="gallery__thumb" type="button"
+                    data-gv="photo" data-img="assets/img/bat-youth-finisher.png" data-of="youth"
+                    data-alt="The Youth Finisher Half Bat with a Pivot Point Grip fitted."
+                    aria-pressed="false" aria-label="Youth build">
+              <img src="assets/img/bat-youth-finisher.png" alt="" loading="lazy" width="78" height="78">
+            </button>
+            <button class="gallery__thumb" type="button"
+                    data-gv="photo" data-img="assets/img/bat-custom-finisher.png" data-of="custom"
+                    data-alt="A custom Finisher Half Bat finished in team colors."
+                    aria-pressed="false" aria-label="Custom build">
+              <img src="assets/img/bat-custom-finisher.png" alt="" loading="lazy" width="78" height="78">
+            </button>
+            <button class="gallery__thumb" type="button"
+                    data-gv="photo" data-img="assets/img/bat-custom-youth-finisher.png"
+                    data-alt="A custom Finisher barrel engraved with a team logo."
+                    aria-pressed="false" aria-label="Engraving detail">
+              <img src="assets/img/bat-custom-youth-finisher.png" alt="" loading="lazy" width="78" height="78">
+            </button>
+            <button class="gallery__thumb gallery__thumb--cover" type="button"
+                    data-gv="photo" data-img="assets/img/tile-gloves-grip.jpg" data-fit="cover"
+                    data-alt="Batting gloves wrapped around a Pivot Point Grip."
+                    aria-pressed="false" aria-label="In the hands">
+              <img src="assets/img/tile-gloves-grip.jpg" alt="" loading="lazy" width="78" height="78">
+            </button>
+          </div>
+        </div>
+
+        <div class="pdp__buy" data-pdp-buy>
           <div class="pdp__price-row">
             <span class="pdp__price" data-pdp-price>$149.99</span>
             <span class="pdp__price-note">Excl. sales tax</span>
@@ -111,30 +188,30 @@
               <p class="opt__chosen" data-pdp-chosen>Adult &middot; $149.99</p>
             </div>
             <div class="opt__set" role="group" aria-labelledby="opt-model">
-            <button class="opt__btn" type="button"
-                    data-variant="finisher/youth"
-                    data-price="$144.99"
-                    data-label="Youth &middot; $144.99"
-                    data-bar="Finisher Half Bat &middot; Youth"
-                    data-img="assets/img/bat-youth-finisher.png"
-                    data-blurb="For hands under 7.25", measured palm to fingertip. Comes with the Youth grip fitted."
-                    aria-pressed="false">Youth</button>
-            <button class="opt__btn" type="button"
-                    data-variant="finisher/adult"
-                    data-price="$149.99"
-                    data-label="Adult &middot; $149.99"
-                    data-bar="Finisher Half Bat &middot; Adult"
-                    data-img="assets/img/bat-half-bat.png"
-                    data-blurb="For hands over 7.25", measured palm to fingertip. Comes with the Adult grip fitted."
-                    aria-pressed="true">Adult</button>
-            <button class="opt__btn" type="button"
-                    data-variant="finisher/custom"
-                    data-price="$159.99"
-                    data-label="Custom &middot; $159.99"
-                    data-bar="Finisher Half Bat &middot; Custom"
-                    data-img="assets/img/bat-custom-finisher.png"
-                    data-blurb="Adult build in your team colors, with your logo engraved on the barrel. Allow extra time."
-                    aria-pressed="false">Custom</button>
+              <button class="opt__btn" type="button"
+                      data-variant="finisher/youth"
+                      data-price="$144.99"
+                      data-label="Youth &middot; $144.99"
+                      data-bar="Finisher Half Bat &middot; Youth"
+                      data-img="assets/img/bat-youth-finisher.png"
+                      data-blurb="For hands under 7.25", measured palm to fingertip. Comes with the Youth grip fitted."
+                      aria-pressed="false"><b>Youth</b><span>$144.99</span></button>
+              <button class="opt__btn" type="button"
+                      data-variant="finisher/adult"
+                      data-price="$149.99"
+                      data-label="Adult &middot; $149.99"
+                      data-bar="Finisher Half Bat &middot; Adult"
+                      data-img="assets/img/bat-half-bat.png"
+                      data-blurb="For hands over 7.25", measured palm to fingertip. Comes with the Adult grip fitted."
+                      aria-pressed="true"><b>Adult</b><span>$149.99</span></button>
+              <button class="opt__btn" type="button"
+                      data-variant="finisher/custom"
+                      data-price="$159.99"
+                      data-label="Custom &middot; $159.99"
+                      data-bar="Finisher Half Bat &middot; Custom"
+                      data-img="assets/img/bat-custom-finisher.png"
+                      data-blurb="Adult build in your team colors, with your logo engraved on the barrel. Allow extra time."
+                      aria-pressed="false"><b>Custom</b><span>$159.99</span></button>
             </div>
             <p class="opt__blurb" data-pdp-blurb>For hands over 7.25&Prime;, measured palm to fingertip. Comes with the Adult grip fitted.</p>
           </div>
@@ -159,14 +236,20 @@
           <button class="btn btn--accent pdp__add" type="button"
                   data-pdp-add data-add-to-cart="finisher/adult">Add to cart</button>
 
+          <p class="pdp__nudge">
+            <b>10% off</b>
+            <span>when you add a second training bat &mdash;
+            <a href="bats.html">see the ten</a>.</span>
+          </p>
+
           <div class="trust">
             <div class="trust__item">
               <p class="trust__title">Grip already fitted</p>
               <p class="trust__text">Nothing to install. Take it straight to the cage.</p>
             </div>
             <div class="trust__item">
-              <p class="trust__title">Mix &amp; match</p>
-              <p class="trust__text">Any two training bats take 10% off.</p>
+              <p class="trust__title">Ships US &amp; Canada</p>
+              <p class="trust__text">Team orders quoted separately.</p>
             </div>
             <div class="trust__item">
               <p class="trust__title">Made in the USA</p>
@@ -194,6 +277,81 @@
     </div>
   </div>
 
+
+  <!-- ==================== THE PROBLEM ==================== -->
+  <section class="section section--cream">
+    <div class="wrap">
+      <div class="section-head" data-reveal>
+        <h2 class="h2">Most half bats<br>end up in the bag</h2>
+        <p class="section-head__note">The difference</p>
+      </div>
+
+      <div class="vs" data-reveal>
+        <article class="vs__col">
+          <p class="vs__tag">A traditional half bat</p>
+          <ul class="vs__list">
+            <li>You set the hands yourself, rep after rep, and they move.</li>
+            <li>The hold drifts back to the one you already had.</li>
+            <li>A bad result could be the swing or could be the grip, and you cannot tell which.</li>
+            <li>So it gets used now and then, instead of every day.</li>
+          </ul>
+        </article>
+
+        <article class="vs__col vs__col--this">
+          <p class="vs__tag">The Finisher</p>
+          <ul class="vs__list">
+            <li>The grip positions the bat. Your hands land in one place.</li>
+            <li>Power Grooves&trade; hold the alignment through the swing.</li>
+            <li>The hold is a constant, so the ball flight is about the swing.</li>
+            <li>It earns a place in the daily routine.</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== HOW IT WORKS ==================== -->
+  <section class="section section--dark">
+    <div class="wrap">
+      <div class="split" data-reveal>
+        <div>
+          <p class="eyebrow">What does the positioning</p>
+          <h2 class="h2">Three things,<br>one piece</h2>
+          <p class="lede" style="margin-top:clamp(20px,2.6vw,30px)">
+            A half bat only teaches you something if your hands are in the right
+            place. These are what put them there and keep them there.
+          </p>
+          <p style="margin-top:clamp(24px,3vw,34px)">
+            <a class="btn btn--ghost" href="grips.html">About the grip</a>
+          </p>
+        </div>
+
+        <ul class="feature-list" style="margin-top:0">
+          <li>
+            <span class="feature-list__num">01</span>
+            <div>
+              <p class="feature-list__title">Power Grooves&trade;</p>
+              <p class="feature-list__text">Hand alignment that repeats itself, swing after swing. You cannot drift back into the old grip without noticing.</p>
+            </div>
+          </li>
+          <li>
+            <span class="feature-list__num">02</span>
+            <div>
+              <p class="feature-list__title">Ergonomic palm pads</p>
+              <p class="feature-list__text">Contoured to the hands, so you grip with the whole hand rather than the fingers. More surface on the bat, more control of the barrel.</p>
+            </div>
+          </li>
+          <li>
+            <span class="feature-list__num">03</span>
+            <div>
+              <p class="feature-list__title">Integrated knob</p>
+              <p class="feature-list__text">Built into the grip rather than bolted under it. Improves range of motion and barrel accuracy.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
 
   <!-- ==================== THE ARGUMENT ==================== -->
   <section class="section section--cream">
@@ -234,47 +392,37 @@
             <p class="attribution__name">Jace Bohrofen</p>
             <p class="attribution__role">University of Arkansas</p>
           </div>
+          <p style="margin-top:clamp(24px,3vw,34px)">
+            <a class="btn btn--outline-ink" href="testimonials.html">More from the cage</a>
+          </p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ==================== HOW IT WORKS ==================== -->
-  <section class="section section--dark">
+  <!-- ==================== IN USE ==================== -->
+  <section class="section section--dark" style="padding-bottom:0">
     <div class="wrap">
-      <div class="split" data-reveal>
-        <div>
-          <p class="eyebrow">What does the positioning</p>
-          <h2 class="h2">Three things,<br>one piece</h2>
-          <p class="lede" style="margin-top:clamp(20px,2.6vw,30px)">
-            A half bat only teaches you something if your hands are in the right
-            place. These are what put them there and keep them there.
-          </p>
-        </div>
+      <div class="section-head" data-reveal>
+        <h2 class="h2">Tee, toss,<br>machine, BP</h2>
+        <p class="section-head__note">Real baseballs</p>
+      </div>
+      <p class="lede" data-reveal style="max-width:60ch;margin:0 0 clamp(32px,4vw,52px)">
+        It is a training bat, not a novelty. Hit off a tee to feel the
+        position, front toss to keep it honest, then a machine or live BP once
+        the hold stops being something you think about.
+      </p>
+    </div>
 
-        <ul class="feature-list" style="margin-top:0">
-          <li>
-            <span class="feature-list__num">01</span>
-            <div>
-              <p class="feature-list__title">Power Grooves&trade;</p>
-              <p class="feature-list__text">Hand alignment that repeats itself, swing after swing. You cannot drift back into the old grip without noticing.</p>
-            </div>
-          </li>
-          <li>
-            <span class="feature-list__num">02</span>
-            <div>
-              <p class="feature-list__title">Ergonomic palm pads</p>
-              <p class="feature-list__text">Contoured to the hands, so you grip with the whole hand rather than the fingers. More surface on the bat, more control of the barrel.</p>
-            </div>
-          </li>
-          <li>
-            <span class="feature-list__num">03</span>
-            <div>
-              <p class="feature-list__title">Integrated knob</p>
-              <p class="feature-list__text">Built into the grip rather than bolted under it. Improves range of motion and barrel accuracy.</p>
-            </div>
-          </li>
-        </ul>
+    <div class="photo-strip">
+      <div class="frame frame--square frame--dark media-reveal">
+        <img src="assets/img/tile-cage-swing.jpg" alt="A hitter loading up with a Pivot Point grip on his bat inside the cage." loading="lazy" width="337" height="337">
+      </div>
+      <div class="frame frame--square frame--dark media-reveal">
+        <img src="assets/img/tile-gloves-grip.jpg" alt="Batting gloves wrapped around a Pivot Point grip." loading="lazy" width="337" height="337">
+      </div>
+      <div class="frame frame--square frame--dark media-reveal">
+        <img src="assets/img/tile-grips-pair.jpg" alt="Two Pivot Point grips installed on bat handles, showing the power grooves." loading="lazy" width="337" height="337">
       </div>
     </div>
   </section>

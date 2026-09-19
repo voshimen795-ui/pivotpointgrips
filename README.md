@@ -9,7 +9,7 @@ relative, so it runs from a subdirectory too.
 
 | File | In the nav | What's on it |
 | --- | --- | --- |
-| `finisher.html` | Finisher | The hero product's landing page: buy panel, variants, sizing, compare, FAQ |
+| `finisher.html` | Finisher | The hero product's landing page: gallery, buy panel, variants, the case against a plain half bat, sizing, compare, FAQ |
 | `index.html` | Home | 3D hero, stats, photo strip, what the grip is, two doors into the catalogue, one testimonial, team CTA |
 | `grips.html` | Grips | Both SKUs, sizing guidance |
 | `bats.html` | Bats | All ten training bats, plus which-one-when |
@@ -127,9 +127,15 @@ Three things in there are less obvious than they look:
 
 Motion is timed off the rAF clock in units per second, not per frame, so the
 turntable runs at the same speed on a 60Hz laptop and a 120Hz phone and does
-not jump after a backgrounded tab. A full turn takes about 12 seconds
+not jump after a backgrounded tab. A full turn takes about 8 seconds
 (`SPIN_RATE`). Camera distance is derived from the field of view, so any
 container shape frames the bat identically.
+
+On `finisher.html` the bat also carries three labels — the knob, the grooves,
+the palm pads. Each is anchored to a point in bat space and reprojected every
+frame, so it rides its own part of the grip and fades out when that part turns
+away. They are hidden below 640px, where three labels in a phone-width well
+cover the grip they are pointing at.
 
 three.js is ~180 kB gzipped, so it is **never in the initial payload**. The
 module is imported only when the section is within 400px of the viewport, and
@@ -137,11 +143,39 @@ only when the device passes a check for WebGL, no `prefers-reduced-motion` and
 no `Save-Data`. Everything else falls back to the product photo underneath,
 which is what ships in the markup.
 
-## Variants
+## The Finisher page
 
 `finisher.html` is a single-product landing page, built because the client's
 read was that a focused page for the Finisher beats a catalogue — and because
 the catalogue had no way to express that a bat comes in more than one build.
+It is the page the header CTA points at, and the one the rest of the site
+funnels into. The rest of the site stays: this is the front door, not a
+replacement for it.
+
+Three things in there are worth knowing before editing it:
+
+- **The buy area is three grid children, not two.** `.pdp__head` (name,
+  promise, the Bohrofen line), `.pdp__stage` (the turntable and the gallery
+  rail) and `.pdp__buy` (price, model, button, trust). Side by side, the
+  heading sits above the buy panel in the right column; in one column it
+  leads. That is one DOM order laid out two ways with `grid-template-areas`,
+  rather than the heading being written twice — a phone that opens on
+  nothing but a bat has pushed the name and the price off the screen.
+- **The stage is also the gallery.** The first thumbnail hands the frame back
+  to the turntable; the rest are photographs. A thumb carrying `data-of`
+  belongs to a model, so picking that model moves the gallery with it. The
+  engraving detail and the in-use shot carry no `data-of`, and choosing a
+  model deliberately leaves them alone: yanking the frame away from a photo
+  someone opened on purpose is the wrong answer. The thumbs are keyed on
+  `data-gv`, not `data-view`, because the stage itself carries `data-view`
+  and one selector picked up both.
+- **The mobile buy bar only appears once you have scrolled past the panel.**
+  The observer's root is extended far down the page, so "not intersecting"
+  can only mean "above the top edge". Below the fold is not the same thing:
+  on a phone the panel starts below the fold, and a sticky bar that greets
+  you on arrival is nagging rather than useful.
+
+## Variants
 
 A variant SKU is `base/variantId`, e.g. `finisher/adult`. `resolve()` in
 `assets/js/catalog.js` turns either form into a name, price and image, and
@@ -227,9 +261,18 @@ to `MIX_RULE` in both files if it exists.
 6. **Footer links** for Terms, Returns and Blog are placeholders (`#terms`,
    `#returns`, `#blog`). A real store needs Terms, Returns and Privacy pages
    before Stripe will be happy.
+7. **The logo.** `assets/img/favicon.svg` and the header lockup both draw the
+   same placeholder — a ring with the point at its centre. Drop the real logo
+   in and replace both.
+8. **Link previews.** Every page carries Open Graph and Twitter card tags, but
+   `og:image` is a relative path because the production domain is not known
+   here. Some crawlers resolve it, the strict ones do not. Once the domain is
+   settled, make it absolute in `head()` — and give the Finisher page its own
+   share image through the `share` argument, which is already wired through
+   `page()`.
 
 ## Editing note
 
-The header and footer markup is duplicated in all ten HTML files. It is
-identical in each — if you change a nav item, change it in all ten, or the
+The header and footer markup is duplicated in all twelve HTML files. It is
+identical in each — if you change a nav item, change it in all twelve, or the
 navigation will drift between pages.

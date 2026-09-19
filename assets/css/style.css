@@ -507,10 +507,26 @@ button { font: inherit; color: inherit; cursor: pointer; }
   letter-spacing: var(--label-track);
   text-transform: uppercase;
   color: var(--on-dark-dim);
-  width: 15ch;
+  /* A fixed 15ch broke "Swinging with PPG" across three ragged lines. The
+     label is one short phrase and is hidden below 640px anyway, so it sets
+     its own width and stays on one line. */
+  white-space: nowrap;
 }
 @media (max-width: 640px) { .marquee__label { display: none; } }
-.marquee__viewport { overflow: hidden; flex: 1; min-width: 0; }
+
+/* The track runs under the section edges, so it needs to arrive and leave
+   rather than pop. The mask fades both ends into the background. */
+.marquee__viewport {
+  overflow: hidden;
+  flex: 1;
+  min-width: 0;
+  -webkit-mask-image: linear-gradient(to right,
+    transparent 0, #000 clamp(24px, 6%, 80px),
+    #000 calc(100% - clamp(24px, 6%, 80px)), transparent 100%);
+  mask-image: linear-gradient(to right,
+    transparent 0, #000 clamp(24px, 6%, 80px),
+    #000 calc(100% - clamp(24px, 6%, 80px)), transparent 100%);
+}
 .marquee__track {
   display: flex;
   align-items: center;
@@ -1572,6 +1588,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
     var(--ink-raise);
 }
 @media (min-width: 900px) { .bat3d { aspect-ratio: 4 / 5; } }
+/* On a phone a 3:4 well eats the whole screen before anything can be read.
+   The camera derives its distance from the container shape, so a square one
+   still frames the whole bat. */
+@media (max-width: 640px) { .bat3d { aspect-ratio: 1; min-height: 340px; } }
 
 .bat3d__fallback {
   position: absolute;
@@ -1615,6 +1635,22 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .bat3d[data-ready="true"] .bat3d__hint { opacity: 1; }
 @media (hover: none) { .bat3d__hint { display: none; } }
 
+/* --- Gallery views ------------------------------------------------------
+ * The stage doubles as a gallery: the turntable is one view, the product
+ * photographs are the others. These rules come after the [data-ready] ones
+ * on purpose — same specificity, so source order decides, and a chosen photo
+ * beats "the renderer is up".
+ */
+.bat3d[data-view="photo"] .bat3d__fallback { opacity: 1; }
+.bat3d[data-view="photo"] .bat3d__canvas,
+.bat3d[data-view="photo"] .bat3d__hint,
+.bat3d[data-view="photo"] .hotspot { opacity: 0; }
+
+/* Staged product shots are transparent PNGs that want air around them;
+   a photograph of a bat in use wants the whole frame. */
+.bat3d__fallback--cover { padding: 0; }
+.bat3d__fallback--cover img { object-fit: cover; }
+
 /* Hotspots are positioned per frame by bat3d.js; CSS only styles them. */
 .hotspot {
   position: absolute;
@@ -1630,6 +1666,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
   white-space: nowrap;
 }
 .bat3d[data-failed="true"] .hotspot { display: none; }
+/* Three labels in a phone-width well cover the grip they are pointing at. */
+@media (max-width: 640px) { .hotspot { display: none; } }
 
 .hotspot__dot {
   width: 9px;
@@ -2021,19 +2059,101 @@ button { font: inherit; color: inherit; cursor: pointer; }
    for it. Built as its own components rather than bending the catalogue grid,
    because the job is different — one product, many reasons.
    ========================================================================== */
+/* Three children in one DOM order — heading, stage, buy — laid out two ways.
+   Side by side the heading sits above the buy panel in the right column; in
+   one column it leads, because a phone that opens on nothing but a bat has
+   pushed the name and the price off the screen. */
 .pdp {
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
-  gap: clamp(28px, 4vw, 72px);
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "stage head"
+    "stage buy";
+  column-gap: clamp(28px, 4vw, 72px);
+  row-gap: var(--space-4);
   align-items: start;
 }
-@media (max-width: 900px) { .pdp { grid-template-columns: 1fr; } }
+.pdp__head  { grid-area: head; }
+.pdp__head > :last-child { margin-bottom: 0; }   /* the row gap spaces it */
+.pdp__stage { grid-area: stage; }
+.pdp__buy   { grid-area: buy; }
+
+@media (max-width: 900px) {
+  .pdp {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    grid-template-areas: "head" "stage" "buy";
+    row-gap: clamp(24px, 4vw, 34px);
+  }
+}
+
+/* A grid item's default min-width is auto, so it refuses to go narrower than
+   its content. The gallery rail scrolls, but its six thumbs still measure
+   528px min-content, and that pushed the whole column past a phone screen. */
+.pdp > * { min-width: 0; }
 
 /* The stage holds the 3D bat on desktop, the product photo everywhere else. */
 .pdp__stage { position: relative; }
 @media (min-width: 901px) {
   .pdp__buy { position: sticky; top: 104px; }
 }
+
+/* --- Gallery rail -------------------------------------------------------
+ * Thumbnails under the stage, the first of which is the turntable itself.
+ * It scrolls horizontally rather than wrapping, so the rail stays one line
+ * on a phone and never pushes the buy panel down a screen.
+ */
+.gallery {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.gallery::-webkit-scrollbar { display: none; }
+
+.gallery__thumb {
+  flex: none;
+  width: 78px;
+  height: 78px;
+  display: grid;
+  place-items: center;
+  padding: 7px;
+  /* The same stage as the product cards, at thumbnail scale. Without the
+     pool of light a dark bat on a dark square reads as an empty box. */
+  background:
+    radial-gradient(62% 58% at 50% 54%, rgba(230, 138, 24, .13) 0%, rgba(230, 138, 24, 0) 72%),
+    radial-gradient(78% 70% at 50% 50%, #242424 0%, #161616 100%);
+  border: 1px solid var(--line-control);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease),
+              transform var(--dur-fast) var(--ease);
+}
+.gallery__thumb img { width: 100%; height: 100%; object-fit: contain; }
+.gallery__thumb--cover { padding: 0; }
+.gallery__thumb--cover img { object-fit: cover; }
+.gallery__thumb:hover { border-color: var(--orange); }
+.gallery__thumb[aria-pressed="true"] {
+  border-color: var(--orange);
+  box-shadow: inset 0 0 0 1px var(--orange);
+}
+@media (prefers-reduced-motion: reduce) { .gallery__thumb { transition: none; } }
+
+/* The turntable's own thumb has no photograph to show, so it says so. */
+.gallery__spin {
+  font-family: var(--font-mono);
+  font-size: var(--label-size-xs);
+  line-height: 1.25;
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--on-dark-dim);
+  text-align: center;
+}
+.gallery__thumb[aria-pressed="true"] .gallery__spin { color: var(--on-dark); }
 
 .pdp__eyebrow { margin-bottom: var(--space-3); }
 .pdp__title {
@@ -2052,6 +2172,39 @@ button { font: inherit; color: inherit; cursor: pointer; }
   line-height: 1.6;
   color: var(--on-dark-dim);
   max-width: 46ch;
+}
+
+/* Social proof, directly under the promise. One real name, not a star
+   rating — there is no review system behind this site to average. */
+.pdp__proof {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  margin: 0 0 var(--space-5);
+  padding: 11px 14px;
+  background: var(--ink-raise);
+  border: 1px solid var(--ink-line);
+  border-left: 3px solid var(--orange);
+  border-radius: var(--radius);
+}
+.pdp__proof-quote {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.pdp__proof-who {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--label-size-xs);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--on-dark-dim);
+}
+.pdp__proof-who a {
+  color: var(--orange);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .pdp__price-row {
@@ -2096,11 +2249,17 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 .opt__set { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 
+/* Two lines: the model, and what it costs. The price difference between the
+   three builds is the whole decision, so it belongs on the button rather
+   than only in the row above it. */
 .opt__btn {
+  flex: 1 1 0;
+  min-width: 96px;
   min-height: var(--tap);
-  padding: 12px 20px;
-  font-size: 15px;
-  font-weight: 700;
+  display: grid;
+  gap: 2px;
+  padding: 10px 14px;
+  text-align: left;
   color: var(--on-dark);
   background: var(--ink-raise);
   border: 1px solid var(--line-control);
@@ -2109,12 +2268,20 @@ button { font: inherit; color: inherit; cursor: pointer; }
               background-color var(--dur-fast) var(--ease),
               color var(--dur-fast) var(--ease);
 }
+.opt__btn b { font-size: 15px; font-weight: 700; }
+.opt__btn span {
+  font-family: var(--font-mono);
+  font-size: var(--label-size-xs);
+  letter-spacing: .04em;
+  color: var(--on-dark-dim);
+}
 .opt__btn:hover { border-color: var(--orange); }
 .opt__btn[aria-pressed="true"] {
   background: var(--orange);
   border-color: var(--orange);
   color: var(--ink);
 }
+.opt__btn[aria-pressed="true"] span { color: rgba(16, 16, 16, .78); }
 .opt__blurb {
   margin: var(--space-3) 0 0;
   font-size: 15px;
@@ -2138,6 +2305,26 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .opt__pending a { color: var(--orange); text-decoration: underline; text-underline-offset: 3px; }
 
 .pdp__add { width: 100%; }
+
+/* The mix & match rule is the one published discount, so it belongs next to
+   the button rather than buried on the bats page. */
+.pdp__nudge {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px var(--space-2);
+  margin: var(--space-3) 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--on-dark-dim);
+}
+.pdp__nudge b { color: var(--orange); font-weight: 700; }
+.pdp__nudge a {
+  color: var(--on-dark);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.pdp__nudge a:hover { color: var(--orange); }
 
 /* --- Trust row ---------------------------------------------------------- */
 .trust {
@@ -2268,3 +2455,71 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .compare-card__text { margin: var(--space-2) 0 var(--space-4); font-size: 15px; line-height: 1.6; color: var(--on-light-dim); }
 .compare-card__foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+
+/* --- Before / after -----------------------------------------------------
+ * Two columns stating the problem and the change. The second is the one
+ * being sold, so it carries the weight; the first is deliberately quiet.
+ */
+.vs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(16px, 2.4vw, 28px);
+  margin-top: clamp(32px, 4vw, 52px);
+}
+@media (max-width: 760px) { .vs { grid-template-columns: 1fr; } }
+
+.vs__col {
+  padding: clamp(22px, 2.8vw, 34px);
+  border: 1px solid var(--cream-line);
+  border-radius: var(--radius);
+  background: var(--cream-2);
+}
+.vs__col--this {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--on-dark);
+}
+
+.vs__tag {
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--label-size);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--on-light-dim);
+}
+.vs__col--this .vs__tag { color: var(--orange); }
+
+.vs__list { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--space-3); }
+.vs__list li {
+  position: relative;
+  padding-left: 30px;
+  font-size: clamp(.97rem, 1.2vw, 1.06rem);
+  line-height: 1.55;
+  color: var(--on-light-dim);
+}
+.vs__col--this .vs__list li { color: var(--on-dark); }
+
+/* Marks drawn in CSS rather than shipped as glyphs, so they inherit the
+   column's colour and never fall back to an emoji font. */
+.vs__list li::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: .5em;
+  width: 13px;
+  height: 2px;
+  background: var(--on-light-dim);
+  opacity: .55;
+}
+.vs__col--this .vs__list li::before {
+  left: 3px;
+  top: .34em;
+  width: 7px;
+  height: 13px;
+  background: none;
+  border-right: 2px solid var(--orange);
+  border-bottom: 2px solid var(--orange);
+  transform: rotate(42deg);
+  opacity: 1;
+}

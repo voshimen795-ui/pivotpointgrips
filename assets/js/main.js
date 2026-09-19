@@ -279,6 +279,46 @@
     var barPrice = document.querySelector('[data-bar-price]');
     var barAdd = document.querySelector('[data-bar-add]');
 
+    /* The stage is also the gallery. The turntable is one view; the staged
+     * product shots and the in-use photo are the others. A thumb with a
+     * data-img shows that photograph, the one without it hands the frame
+     * back to the renderer.
+     */
+    var frame = pdp.querySelector('[data-bat3d]');
+    var shot = pdp.querySelector('.bat3d__fallback');
+    var thumbs = Array.prototype.slice.call(pdp.querySelectorAll('[data-gv]'));
+
+    var press = function (el) {
+      thumbs.forEach(function (t) {
+        t.setAttribute('aria-pressed', String(t === el));
+      });
+    };
+
+    var pressed = function () {
+      return thumbs.filter(function (t) {
+        return t.getAttribute('aria-pressed') === 'true';
+      })[0];
+    };
+
+    var paint = function (src, cover, alt) {
+      if (shot) shot.classList.toggle('bat3d__fallback--cover', !!cover);
+      if (!imgEl) return;
+      imgEl.setAttribute('src', src);
+      if (alt) imgEl.setAttribute('alt', alt);
+    };
+
+    var show = function (thumb) {
+      var img = thumb.getAttribute('data-img');
+      press(thumb);
+      if (!frame) return;
+
+      if (!img) { frame.setAttribute('data-view', '3d'); return; }
+
+      frame.setAttribute('data-view', 'photo');
+      paint(img, thumb.getAttribute('data-fit') === 'cover',
+            thumb.getAttribute('data-alt'));
+    };
+
     var choose = function (btn) {
       var sku = btn.getAttribute('data-variant');
 
@@ -294,11 +334,35 @@
       if (barName) barName.textContent = btn.getAttribute('data-bar');
       if (blurbEl) blurbEl.textContent = btn.getAttribute('data-blurb');
 
+      /* The stage follows the model — but only where that is what the
+       * visitor asked for. On the turntable the photo underneath is just the
+       * fallback, so keeping it in step costs nothing and means a later
+       * switch to a photo lands on the right build. On a model photo, moving
+       * the gallery along with the selection is the point. On the engraving
+       * detail or the in-use shot it is not: they belong to no model, and
+       * yanking the frame away from a photo someone deliberately opened
+       * would be the wrong answer.
+       */
       var img = btn.getAttribute('data-img');
-      if (imgEl && img) imgEl.setAttribute('src', img);
+      var here = pressed();
+      var onModelShot = here && here.hasAttribute('data-of');
+
+      if (!img || !frame) return;
+
+      if (frame.getAttribute('data-view') !== 'photo') {
+        paint(img, false, null);
+      } else if (onModelShot) {
+        var match = thumbs.filter(function (t) {
+          return t.getAttribute('data-img') === img;
+        })[0];
+        if (match) show(match);
+      }
     };
 
     pdp.addEventListener('click', function (e) {
+      var thumb = e.target.closest('[data-gv]');
+      if (thumb) { show(thumb); return; }
+
       var btn = e.target.closest('[data-variant]');
       if (btn) choose(btn);
     });
@@ -309,9 +373,20 @@
     var panel = pdp.querySelector('[data-pdp-buy]');
 
     if (bar && panel && 'IntersectionObserver' in window) {
+      /* Only "scrolled past" earns the bar. Below the viewport just means
+       * not there yet — on a phone the panel starts under the fold, and a
+       * sticky bar that greets you on arrival is nagging rather than useful.
+       *
+       * The root is extended downwards far past any page, so everything
+       * below the fold still counts as intersecting and the single test
+       * `!isIntersecting` means "above the top edge" and nothing else. The
+       * alternative, reading boundingClientRect inside the callback, goes
+       * stale on a jump: a scroll straight from the footer back to the top
+       * of the page crosses no threshold, so nothing fires to correct it.
+       */
       new IntersectionObserver(function (entries) {
         bar.classList.toggle('is-on', !entries[0].isIntersecting);
-      }, { threshold: 0 }).observe(panel);
+      }, { threshold: 0, rootMargin: '0px 0px 100000px 0px' }).observe(panel);
     }
   }
 
