@@ -217,6 +217,26 @@
           </div>
 
           <!--
+            Build. Their "The Half Bat with PPG" page sells the adult bat as
+            either the Finisher or the Iron, so the choice belongs on the buy
+            panel. It rides on the cart line rather than changing the price,
+            because it does not change the price.
+          -->
+          <div class="opt" data-opt-build hidden>
+            <div class="opt__head">
+              <p class="opt__label" id="opt-build">Build</p>
+              <p class="opt__chosen" data-build-chosen></p>
+            </div>
+            <div class="opt__set" role="group" aria-labelledby="opt-build">
+              <button class="opt__btn" type="button" data-build="Finisher"
+                      aria-pressed="true"><b>Finisher</b><span>&asymp;22 oz</span></button>
+              <button class="opt__btn" type="button" data-build="Iron"
+                      aria-pressed="false"><b>Iron</b><span>&asymp;28 oz</span></button>
+            </div>
+            <p class="opt__blurb" data-build-blurb>The lighter of the two. Bat speed, control and repeatability without overloading the hands or arms.</p>
+          </div>
+
+          <!--
             The length axis. It renders this note while catalog.js ships an
             empty `lengths` array, because a wrong length on a buy button is a
             wrong order. Fill the array in and the selector replaces this.
@@ -238,8 +258,8 @@
 
           <p class="pdp__nudge">
             <b>10% off</b>
-            <span>when you add a second training bat &mdash;
-            <a href="bats.html">see the ten</a>.</span>
+            <span>on two or more Finisher, Iron or Sledge &mdash;
+            <a href="bats.html">see the ten bats</a>.</span>
           </p>
 
           <div class="trust">
@@ -252,8 +272,8 @@
               <p class="trust__text">Team orders quoted separately.</p>
             </div>
             <div class="trust__item">
-              <p class="trust__title">Made in the USA</p>
-              <p class="trust__text">Built to survive a full season of BP.</p>
+              <p class="trust__title">Maple, made in the USA</p>
+              <p class="trust__text">Built by JAWBATS. 30-day returns.</p>
             </div>
           </div>
         </div>
@@ -404,14 +424,22 @@
   <section class="section section--dark" style="padding-bottom:0">
     <div class="wrap">
       <div class="section-head" data-reveal>
-        <h2 class="h2">Tee, toss,<br>machine, BP</h2>
-        <p class="section-head__note">Real baseballs</p>
+        <h2 class="h2">Tee, toss,<br>machine work</h2>
+        <p class="section-head__note">Training balls</p>
       </div>
       <p class="lede" data-reveal style="max-width:60ch;margin:0 0 clamp(32px,4vw,52px)">
         It is a training bat, not a novelty. Hit off a tee to feel the
-        position, front toss to keep it honest, then a machine or live BP once
-        the hold stops being something you think about.
+        position, front toss to keep it honest, then machine work once the
+        hold stops being something you think about &mdash; indoors or out.
       </p>
+      <div class="note-strip" data-reveal>
+        <p class="note-strip__title">Approved balls only</p>
+        <p class="note-strip__text">
+          JUGS Lite-Flite&reg;, Marv Training Balls, Driveline Smash Factor
+          Balls, wiffle balls, tennis balls and similar.
+          <strong>Not for use with hard baseballs or softballs.</strong>
+        </p>
+      </div>
     </div>
 
     <div class="photo-strip">
@@ -452,8 +480,12 @@
             <tr><th scope="row">Custom</th><td>Adult build, team colors, logo engraved. $159.99</td></tr>
             <tr><th scope="row">Lengths</th><td>Several. Tell us which in the order notes &mdash; or ask and we&rsquo;ll match it to the hitter.</td></tr>
             <tr><th scope="row">Grip</th><td>Pivot Point Grip, already installed. Nothing to fit.</td></tr>
-            <tr><th scope="row">Use</th><td>Tee, front toss, machine, BP. Real baseballs.</td></tr>
-            <tr><th scope="row">Made</th><td>USA.</td></tr>
+            <tr><th scope="row">Build</th><td>Adult comes as the Finisher (&asymp;22&nbsp;oz) or the Iron (&asymp;28&nbsp;oz).</td></tr>
+            <tr><th scope="row">Wood</th><td>High quality maple, made in the USA by JAWBATS.</td></tr>
+            <tr><th scope="row">Use</th><td>Tee, soft toss and machine work, indoors or out. Approved training balls only &mdash; not hard baseballs or softballs.</td></tr>
+            <tr><th scope="row">Ships</th><td>2&ndash;3 business days. Custom builds take 3&ndash;4 weeks.</td></tr>
+            <tr><th scope="row">Returns</th><td>30 days, original condition, full product refund. 30-day wood bat warranty.</td></tr>
+            <tr><th scope="row">Patent</th><td>Pivot Point Grip &mdash; US20220168619A1.</td></tr>
           </tbody>
         </table>
       </div>
@@ -487,8 +519,8 @@
           <p class="compare-card__job">BP &middot; Game-bat weight</p>
           <h3 class="h3">The Sledge</h3>
           <p class="compare-card__text">
-            Heavier than the Finisher and closer to game weight, so you can hit
-            real baseballs off a machine and read the flight straight away.
+            Heavier than game weight, with a reduced barrel that leaves no
+            room for a mishit. Advanced hitters only.
           </p>
           <div class="compare-card__foot">
             <span class="price">$199.99</span>
@@ -547,10 +579,13 @@
           </p>
         </details>
         <details>
-          <summary>Can I hit real baseballs with it?</summary>
+          <summary>What can I hit with it?</summary>
           <p>
-            Yes. Tee, front toss, machine or BP. The Sledge is the heavier
-            option if you want something closer to game weight.
+            JUGS Lite-Flite&reg;, Marv Training Balls, Driveline Smash Factor
+            Balls, wiffle balls, tennis balls and similar. <strong>Not hard
+            baseballs or softballs</strong> &mdash; it is a training bat, and
+            that is what the wood is built for. Tee, soft toss and machine
+            work, indoors or out.
           </p>
         </details>
         <details>
@@ -564,8 +599,9 @@
         <details>
           <summary>Is there a discount for more than one?</summary>
           <p>
-            Two or more training bats take 10% off those lines, applied
-            automatically in the cart. Teams get their own pricing &mdash; see
+            Two or more training bats &mdash; Finisher, Iron and/or Sledge
+            &mdash; take 10% off those lines, applied automatically in the
+            cart. Teams get their own pricing &mdash; see
             <a href="team-sales.html">team sales</a>.
           </p>
         </details>

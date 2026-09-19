@@ -32,7 +32,10 @@ for whoever edits the site, not for customers. Open it directly.
 
 ```
 assets/css/style.css     Tokens + every component
-assets/js/main.js        ~230 lines, no dependencies
+assets/js/main.js        No dependencies; lazily pulls in the two below
+assets/js/catalog.js     Prices, the combo rule, cart maths
+assets/js/product-data.js  Every word of product copy, specs and option axes
+assets/js/quickview.js   The product sheet that opens over a grid
 assets/fonts/            Self-hosted Archivo / Inter / Space Mono (woff2, 284 KB)
 assets/img/              Photography and product shots
 assets/video/            Hero footage — see the note in that folder
@@ -175,6 +178,61 @@ Three things in there are worth knowing before editing it:
   on a phone the panel starts below the fold, and a sticky bar that greets
   you on arrival is nagging rather than useful.
 
+## Product detail — the quick view
+
+Every product card opens a sheet: the photo, the price, the option axes, the
+full description, the specs, the approved-ball note and the shop's returns,
+warranty and shipping terms. Both the photograph and the name open it, because
+both are what people press when they want to know more about one of ten
+near-identical bats.
+
+Three files, three jobs:
+
+- **`assets/js/catalog.js`** — prices, the combo rule and the cart maths. It
+  loads on every page because the header badge needs it, so it is kept small.
+- **`assets/js/product-data.js`** — every word of copy, every spec and every
+  option axis. Imported only when somebody actually opens a product.
+- **`assets/js/quickview.js`** — the sheet itself. It owns no cart state: it
+  dispatches a `ppg:add` event and `cart.js` creates the line, so there is
+  still exactly one place a cart line is made and one place that touches
+  localStorage.
+
+**Where the copy came from.** Every claim, spec, policy line and option axis in
+`product-data.js` is off the client's own product pages. The colour palettes
+were sampled swatch by swatch from their pickers, so the 33 bat colours and 18
+engraving colours are their real values rather than an approximation.
+
+**Where their pages contradict each other, the operative instruction wins.**
+The Sledge's description says the reduced barrel "forces absolute precision
+when hitting real baseballs", while the approved-balls block on that same page
+says **not for use with hard baseballs or softballs** — as it does on every
+bat they sell. This build carries the approved-balls instruction and drops the
+sentence that contradicts it. Worth fixing at the source too.
+
+## Options, and what a cart line is
+
+A line is `{ sku, qty, opts }`. `opts` is the build that was chosen — hand,
+grip size, length, colour, finish, engraving colour, logo, engraved text.
+
+**Options never change the price.** Every axis in the shop is a free choice, so
+they are carried for fulfilment and nothing else. They do change a line's
+identity: a right-handed 29″ in navy and a left-handed 31″ in maroon are the
+same SKU at the same price and must not merge into a quantity of two, or the
+order loses what was actually ordered. `lineKey()` in `catalog.js` and the
+matching collapse in the checkout function both key on SKU *and* options.
+
+The function treats `opts` as text from a stranger — a fixed set of known keys,
+values stripped of control characters and clipped to 60 characters — before
+putting them on the Stripe line item, where they reach the receipt and whoever
+packs the bat.
+
+**Axes with no published values ship empty on purpose.** Bat length, the
+Sledge's bat size and the finish list are not published anywhere reachable, so
+the sheet renders a "tell us in the order notes" panel instead of a select full
+of invented numbers. A wrong length on a buy button is a wrong order. Fill the
+array in `product-data.js` and the selector replaces the panel, with no other
+change.
+
 ## Variants
 
 A variant SKU is `base/variantId`, e.g. `finisher/adult`. `resolve()` in
@@ -234,6 +292,15 @@ those lines. The grips carry a "Training Grip Mix & Match" badge whose terms I
 could not find — no rule is applied to them. Confirm with the client and add it
 to `MIX_RULE` in both files if it exists.
 
+## The parity check
+
+Four files have to agree: `catalog.py` in the generator decides what a card
+shows, `assets/js/catalog.js` prices the cart, `functions/create-checkout-session.js`
+decides what is charged, and `assets/js/product-data.js` decides which products
+need their options chosen before they can be ordered. `build.py` refuses to
+write a page until it has checked all four against each other — drift between
+them is the failure that would show one price and charge another.
+
 ## What still needs real content
 
 1. **Six testimonial cards** in *More from the cage* on `testimonials.html` are
@@ -261,10 +328,23 @@ to `MIX_RULE` in both files if it exists.
 6. **Footer links** for Terms, Returns and Blog are placeholders (`#terms`,
    `#returns`, `#blog`). A real store needs Terms, Returns and Privacy pages
    before Stripe will be happy.
-7. **The logo.** `assets/img/favicon.svg` and the header lockup both draw the
+7. **Four option lists from the client**, all marked `TODO(client)` in
+   `assets/js/product-data.js`:
+   - the **bat length** menu (on the customs, the youth bat and the StringKing);
+   - the **bat size** menu on the Sledge;
+   - the **finish** names (gloss / matte / natural …);
+   - the **bat colour names**. The 33 swatches are their real values, but six
+     of them render as pure black, so they are distinct stains a swatch cannot
+     tell apart. They currently read "Bat color 1…33"; add `v:` to each entry
+     and the real names appear everywhere, including on the order.
+
+   Also worth confirming: whether *Add a logo?* is really just Yes/No, and
+   whether the Youth Finisher and StringKing pages carry a hand or grip-size
+   axis — their product pages were not among the screenshots.
+8. **The logo.** `assets/img/favicon.svg` and the header lockup both draw the
    same placeholder — a ring with the point at its centre. Drop the real logo
    in and replace both.
-8. **Link previews.** Every page carries Open Graph and Twitter card tags, but
+9. **Link previews.** Every page carries Open Graph and Twitter card tags, but
    `og:image` is a relative path because the production domain is not known
    here. Some crawlers resolve it, the strict ones do not. Once the domain is
    settled, make it absolute in `head()` — and give the Finisher page its own

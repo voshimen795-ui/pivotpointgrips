@@ -4,7 +4,7 @@
  * quantities; the serverless function prices the order from its own table and
  * creates the Stripe Checkout Session. See functions/create-checkout-session.js.
  */
-import { MIX_RULE, money, price, resolve } from './catalog.js';
+import { MIX_RULE, lineKey, money, optsText, price, resolve } from './catalog.js';
 
 const KEY = 'ppg.cart.v1';
 const ENDPOINT = '/.netlify/functions/create-checkout-session';
@@ -13,6 +13,20 @@ const ENDPOINT = '/.netlify/functions/create-checkout-session';
 
 let lines = load();
 
+/* Options are strings chosen from the product's own lists, plus one free-text
+   engraving field. Sanitising on the way in keeps a hand-edited localStorage
+   entry from putting anything odd in front of whoever packs the order. */
+function cleanOpts(raw) {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const out = {};
+  for (const k of Object.keys(raw).slice(0, 12)) {
+    if (!/^[a-z][a-z0-9]{0,15}$/.test(k)) continue;
+    const v = String(raw[k]).slice(0, 60).trim();
+    if (v) out[k] = v;
+  }
+  return Object.keys(out).length ? out : undefined;
+}
+
 function load() {
   try {
     const raw = JSON.parse(localStorage.getItem(KEY) || '[]');
@@ -20,7 +34,11 @@ function load() {
     // Drop anything that is no longer a real SKU — catalogues change.
     return raw
       .filter((l) => l && resolve(l.sku) && Number.isFinite(l.qty) && l.qty > 0)
-      .map((l) => ({ sku: l.sku, qty: Math.min(99, Math.floor(l.qty)) }));
+      .map((l) => ({
+        sku: l.sku,
+        qty: Math.min(99, Math.floor(l.qty)),
+        opts: cleanOpts(l.opts),
+      }));
   } catch (err) {
     return [];
   }
@@ -38,16 +56,18 @@ function count() {
   return lines.reduce((n, l) => n + l.qty, 0);
 }
 
-function add(sku, qty = 1) {
+function add(sku, qty = 1, opts) {
   if (!resolve(sku)) return;
-  const found = lines.find((l) => l.sku === sku);
+  const line = { sku, qty, opts: cleanOpts(opts) };
+  const key = lineKey(line);
+  const found = lines.find((l) => lineKey(l) === key);
   if (found) found.qty = Math.min(99, found.qty + qty);
-  else lines.push({ sku, qty });
+  else lines.push(line);
   commit();
 }
 
-function setQty(sku, qty) {
-  const i = lines.findIndex((l) => l.sku === sku);
+function setQty(key, qty) {
+  const i = lines.findIndex((l) => lineKey(l) === key);
   if (i < 0) return;
   if (qty < 1) lines.splice(i, 1);
   else lines[i].qty = Math.min(99, qty);
@@ -108,22 +128,26 @@ function renderDrawer() {
     return;
   }
 
-  body.innerHTML = items.map((it) => (
+  body.innerHTML = items.map((it) => {
+    const spec = optsText(it.opts);
+    return (
     '<article class="cart-line">' +
       '<img class="cart-line__img" src="assets/img/' + esc(it.img) + '" alt="" width="80" height="60" loading="lazy">' +
       '<div class="cart-line__main">' +
         '<p class="cart-line__name">' + esc(it.name) + '</p>' +
+        (spec ? '<p class="cart-line__spec">' + esc(spec) + '</p>' : '') +
         '<p class="cart-line__unit">' + money(it.cents) + ' each</p>' +
         '<div class="qty">' +
-          '<button type="button" class="qty__btn" data-qty-down="' + esc(it.sku) + '" aria-label="Decrease quantity of ' + esc(it.name) + '">&minus;</button>' +
+          '<button type="button" class="qty__btn" data-qty-down="' + esc(it.key) + '" aria-label="Decrease quantity of ' + esc(it.name) + '">&minus;</button>' +
           '<span class="qty__value" aria-live="polite">' + it.qty + '</span>' +
-          '<button type="button" class="qty__btn" data-qty-up="' + esc(it.sku) + '" aria-label="Increase quantity of ' + esc(it.name) + '">+</button>' +
-          '<button type="button" class="qty__remove" data-qty-remove="' + esc(it.sku) + '">Remove</button>' +
+          '<button type="button" class="qty__btn" data-qty-up="' + esc(it.key) + '" aria-label="Increase quantity of ' + esc(it.name) + '">+</button>' +
+          '<button type="button" class="qty__remove" data-qty-remove="' + esc(it.key) + '">Remove</button>' +
         '</div>' +
       '</div>' +
       '<p class="cart-line__total">' + money(it.lineTotal) + '</p>' +
     '</article>'
-  )).join('');
+    );
+  }).join('');
 
   const nearMix = MIX_RULE.minQty - mixQty;
 
@@ -201,7 +225,11 @@ document.addEventListener('click', (e) => {
   const addBtn = e.target.closest('[data-add-to-cart]');
   if (addBtn) {
     e.preventDefault();
-    add(addBtn.getAttribute('data-add-to-cart'), 1);
+    // Buy panels that carry an option axis keep the chosen values here, so
+    // this stays the one place a cart line is created.
+    let opts;
+    try { opts = JSON.parse(addBtn.getAttribute('data-opts') || 'null'); } catch (err) { opts = null; }
+    add(addBtn.getAttribute('data-add-to-cart'), 1, opts);
     addBtn.classList.add('is-added');
     setTimeout(() => addBtn.classList.remove('is-added'), 1400);
     openDrawer();
@@ -217,18 +245,26 @@ document.addEventListener('click', (e) => {
   const up = e.target.closest('[data-qty-up]');
   const down = e.target.closest('[data-qty-down]');
   const rm = e.target.closest('[data-qty-remove]');
-  if (up)   { const s = up.getAttribute('data-qty-up');   setQty(s, qtyOf(s) + 1); return; }
-  if (down) { const s = down.getAttribute('data-qty-down'); setQty(s, qtyOf(s) - 1); return; }
+  if (up)   { const k = up.getAttribute('data-qty-up');     setQty(k, qtyOf(k) + 1); return; }
+  if (down) { const k = down.getAttribute('data-qty-down'); setQty(k, qtyOf(k) - 1); return; }
   if (rm)   { setQty(rm.getAttribute('data-qty-remove'), 0); return; }
 
   const pay = e.target.closest('[data-checkout]');
   if (pay) checkout(pay);
 });
 
-function qtyOf(sku) {
-  const l = lines.find((x) => x.sku === sku);
+function qtyOf(key) {
+  const l = lines.find((x) => lineKey(x) === key);
   return l ? l.qty : 0;
 }
+
+/* The quick view adds configured lines through here rather than reaching into
+   this module's state. */
+window.addEventListener('ppg:add', (e) => {
+  const d = e.detail || {};
+  add(d.sku, d.qty || 1, d.opts);
+  openDrawer();
+});
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && drawer && drawer.getAttribute('data-open') === 'true') {

@@ -12,11 +12,16 @@
  */
 export const CURRENCY = 'usd';
 
+/* Their published terms, word for word: "Purchase 2 or more training bats
+   (Finisher, Iron and/or Sledge) and receive 10% off — discount automatically
+   applied at checkout." So the group is those three and not every bat on the
+   site; the NoCastBat, the customs, the StringKing and the two cheap trainers
+   carry no combo badge on their own product cards either. */
 export const MIX_RULE = {
   group: 'bat',
   minQty: 2,
   percentOff: 10,
-  label: 'Mix & match — 2+ training bats',
+  label: 'Training combo — 2+ Finisher / Iron / Sledge',
 };
 
 export const PRODUCTS = {
@@ -108,6 +113,40 @@ export function money(cents) {
 }
 
 /**
+ * A cart line's identity.
+ *
+ * Two of the same bat built differently are two lines, not a quantity of two —
+ * a right-handed 29" in navy and a left-handed 31" in maroon cannot share a
+ * quantity stepper. Keys are sorted so the same choices always produce the
+ * same key whatever order they were picked in.
+ */
+export function lineKey(line) {
+  const opts = line.opts || {};
+  const parts = Object.keys(opts)
+    .filter((k) => opts[k] !== '' && opts[k] != null)
+    .sort()
+    .map((k) => k + '=' + opts[k]);
+  return parts.length ? line.sku + '|' + parts.join('|') : line.sku;
+}
+
+/* Short names for the option axes. Without them a cart line reads
+   "Right · Gold · Yes", which says nothing about what the Yes was for. */
+const OPT_LABEL = {
+  build: 'Build', hand: 'Hand', grip: 'Grip', length: 'Length', size: 'Size',
+  color: 'Color', finish: 'Finish', engcolor: 'Engraving', logo: 'Logo',
+  engraving: 'Text',
+};
+
+/** The chosen options as a human-readable line, for the cart and the order. */
+export function optsText(opts) {
+  if (!opts) return '';
+  return Object.keys(opts)
+    .filter((k) => opts[k] !== '' && opts[k] != null)
+    .map((k) => (OPT_LABEL[k] ? OPT_LABEL[k] + ' ' : '') + opts[k])
+    .join(' · ');
+}
+
+/**
  * Turn a cart SKU into everything the UI needs.
  *
  * Accepts both a plain SKU (`sledge`) and a variant SKU (`finisher/adult`),
@@ -150,13 +189,16 @@ export function price(lines) {
   let subtotal = 0;
   let mixQty = 0;
 
-  for (const { sku, qty } of lines) {
+  for (const line of lines) {
+    const { sku, qty, opts } = line;
     const r = resolve(sku);
     if (!r || qty < 1) continue;
     const lineTotal = r.cents * qty;
     subtotal += lineTotal;
     if (r.mix === MIX_RULE.group) mixQty += qty;
-    items.push({ sku, qty, ...r, lineTotal });
+    // Options never move the price — every axis on their site is a free
+    // choice — so they ride along for the order without touching the maths.
+    items.push({ sku, qty, opts, key: lineKey(line), ...r, lineTotal });
   }
 
   let discount = 0;

@@ -50,6 +50,28 @@ const MIX = { group: 'bat', minQty: 2, percentOff: 10 };
 const MAX_QTY = 99;
 const MAX_LINES = 40;
 
+/* Options arrive from a browser, so they are treated as text from a stranger:
+   a fixed set of short, known keys, values clipped and stripped of anything
+   that is not printable. The result is a flat string because that is what
+   ends up on the Stripe line item, the receipt and the packing list. */
+const OPT_KEYS = ['build', 'hand', 'grip', 'length', 'size', 'color', 'finish',
+                  'engcolor', 'logo', 'engraving'];
+
+function cleanOpts(raw) {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return '';
+  const parts = [];
+  for (const k of OPT_KEYS) {
+    if (!Object.prototype.hasOwnProperty.call(raw, k)) continue;
+    const v = String(raw[k])
+      .replace(/[\u0000-\u001f\u007f]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .slice(0, 60);
+    if (v) parts.push(k + ': ' + v);
+  }
+  return parts.join(' · ');
+}
+
 const json = (statusCode, payload) => ({
   statusCode,
   headers: { 'Content-Type': 'application/json' },
@@ -81,6 +103,12 @@ exports.handler = async (event) => {
   }
 
   // Collapse duplicates and clamp quantities before pricing anything.
+  //
+  // A line's identity is its SKU *and* its options: a right-handed 29" in navy
+  // and a left-handed 31" in maroon are the same SKU at the same price and
+  // must not be merged into a quantity of two, or the order loses what was
+  // actually ordered. Options never move the price — every axis on the shop is
+  // a free choice — so they are carried for fulfilment and nothing else.
   const wanted = new Map();
   for (const line of lines) {
     const sku = line && String(line.sku || '');
@@ -91,15 +119,20 @@ exports.handler = async (event) => {
       return json(400, { error: 'Invalid quantity for ' + sku });
     }
 
-    wanted.set(sku, Math.min(MAX_QTY, (wanted.get(sku) || 0) + qty));
+    const opts = cleanOpts(line && line.opts);
+    const key = sku + '|' + opts;
+    const prev = wanted.get(key);
+    wanted.set(key, { sku, opts, qty: Math.min(MAX_QTY, (prev ? prev.qty : 0) + qty) });
   }
 
-  const mixQty = [...wanted].reduce(
-    (n, [sku, qty]) => n + (PRICES[sku].mix === MIX.group ? qty : 0), 0
+  const rows = [...wanted.values()];
+
+  const mixQty = rows.reduce(
+    (n, r) => n + (PRICES[r.sku].mix === MIX.group ? r.qty : 0), 0
   );
   const discountApplies = mixQty >= MIX.minQty;
 
-  const line_items = [...wanted].map(([sku, qty]) => {
+  const line_items = rows.map(({ sku, opts, qty }) => {
     const p = PRICES[sku];
     const discounted = discountApplies && p.mix === MIX.group;
     const unit = discounted
@@ -112,8 +145,11 @@ exports.handler = async (event) => {
         currency: 'usd',
         unit_amount: unit,
         product_data: {
-          name: p.name + (discounted ? ' (mix & match −' + MIX.percentOff + '%)' : ''),
-          metadata: { sku },
+          name: p.name + (discounted ? ' (training combo −' + MIX.percentOff + '%)' : ''),
+          // What the customer chose, on the receipt and in the dashboard, so
+          // the bat that gets built is the bat that was ordered.
+          ...(opts ? { description: opts } : {}),
+          metadata: { sku, ...(opts ? { options: opts.slice(0, 480) } : {}) },
         },
       },
     };

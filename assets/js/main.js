@@ -263,6 +263,36 @@
     }
   }
 
+  /* --- Quick view --------------------------------------------------------
+   * Every product card opens a sheet with the full description, the option
+   * axes and the buy button. The module carries every word of product copy on
+   * the site, so it is imported the first time somebody actually opens one
+   * rather than on every page load.
+   */
+  var qv = null;
+
+  document.addEventListener('click', function (e) {
+    var open = e.target.closest('[data-quickview]');
+    if (!open) return;
+    e.preventDefault();
+
+    var sku = open.getAttribute('data-quickview');
+    if (qv) { qv.open(sku); return; }
+
+    var url = SELF_SRC
+      ? new URL('quickview.js', SELF_SRC).href
+      : 'assets/js/quickview.js';
+
+    import(url).then(function (mod) {
+      qv = mod;
+      qv.open(sku);
+    }).catch(function () {
+      // No module, no modal — the card's own link still goes somewhere.
+      var href = open.getAttribute('data-quickview-href');
+      if (href) window.location.href = href;
+    });
+  });
+
   /* --- Product page: variant picker + sticky buy bar ----------------------
    * The page ships with a working default selected in the markup, so it is
    * buyable before this runs. All this does is swap the selection.
@@ -287,6 +317,37 @@
     var frame = pdp.querySelector('[data-bat3d]');
     var shot = pdp.querySelector('.bat3d__fallback');
     var thumbs = Array.prototype.slice.call(pdp.querySelectorAll('[data-gv]'));
+
+    /* The build axis. It is written onto the add buttons as data-opts rather
+     * than dispatched from here, so cart.js stays the only place a cart line
+     * is ever created. */
+    var build = pdp.querySelector('[data-opt-build]');
+
+    var BUILD_BLURB = {
+      Finisher: 'The lighter of the two. Bat speed, control and repeatability ' +
+                'without overloading the hands or arms.',
+      Iron: 'Closer to game weight. It challenges strength, control and ' +
+            'precision, and exposes swing inefficiencies.',
+    };
+
+    var syncOpts = function () {
+      var json = '';
+      if (build && !build.hidden) {
+        var on = build.querySelector('[data-build][aria-pressed="true"]');
+        if (on) json = JSON.stringify({ build: on.getAttribute('data-build') });
+      }
+      [addBtn, barAdd].forEach(function (b) {
+        if (!b) return;
+        if (json) b.setAttribute('data-opts', json);
+        else b.removeAttribute('data-opts');
+      });
+
+      var chosen = build && build.querySelector('[data-build-chosen]');
+      var blurb = build && build.querySelector('[data-build-blurb]');
+      var on2 = build && build.querySelector('[data-build][aria-pressed="true"]');
+      if (chosen && on2) chosen.textContent = on2.getAttribute('data-build');
+      if (blurb && on2) blurb.textContent = BUILD_BLURB[on2.getAttribute('data-build')] || '';
+    };
 
     var press = function (el) {
       thumbs.forEach(function (t) {
@@ -328,6 +389,14 @@
 
       if (addBtn) addBtn.setAttribute('data-add-to-cart', sku);
       if (barAdd) barAdd.setAttribute('data-add-to-cart', sku);
+
+      // The Finisher/Iron choice only exists on the adult bat: the youth bat
+      // is one build, and a custom is specified end to end anyway.
+      if (build) {
+        var isAdult = sku === 'finisher/adult';
+        build.hidden = !isAdult;
+        syncOpts();
+      }
       if (priceEl) priceEl.textContent = btn.getAttribute('data-price');
       if (barPrice) barPrice.textContent = btn.getAttribute('data-price');
       if (chosenEl) chosenEl.textContent = btn.getAttribute('data-label');
@@ -363,9 +432,24 @@
       var thumb = e.target.closest('[data-gv]');
       if (thumb) { show(thumb); return; }
 
+      var b = e.target.closest('[data-build]');
+      if (b) {
+        build.querySelectorAll('[data-build]').forEach(function (x) {
+          x.setAttribute('aria-pressed', String(x === b));
+        });
+        syncOpts();
+        return;
+      }
+
       var btn = e.target.closest('[data-variant]');
       if (btn) choose(btn);
     });
+
+    // The markup ships with Adult selected, so show its build axis at once.
+    if (build) {
+      build.hidden = addBtn.getAttribute('data-add-to-cart') !== 'finisher/adult';
+      syncOpts();
+    }
 
     // Reveal the mobile buy bar once the real buy panel has scrolled away,
     // so the two are never on screen at the same time.

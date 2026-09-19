@@ -2523,3 +2523,424 @@ button { font: inherit; color: inherit; cursor: pointer; }
   transform: rotate(42deg);
   opacity: 1;
 }
+
+/* ==========================================================================
+   QUICK VIEW
+   The product sheet that opens over a grid. Built as a dialog rather than a
+   page because the job is "tell me about this one and let me order it"
+   without losing the visitor's place in a grid of ten bats.
+   ========================================================================== */
+.qv {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+}
+.qv__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 8, 8, .74);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease);
+}
+.qv[data-open="true"] .qv__scrim { opacity: 1; }
+
+.qv__panel {
+  position: absolute;
+  inset: auto 0 0 0;
+  max-height: 92vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--ink);
+  border-top: 1px solid var(--ink-line);
+  border-radius: 18px 18px 0 0;
+  padding: clamp(22px, 3.4vw, 42px);
+  transform: translateY(6%);
+  opacity: 0;
+  transition: transform var(--dur-base) var(--ease), opacity var(--dur-base) var(--ease);
+}
+@media (min-width: 860px) {
+  .qv__panel {
+    inset: 50% auto auto 50%;
+    width: min(1060px, calc(100vw - 48px));
+    max-height: min(88vh, 940px);
+    border: 1px solid var(--ink-line);
+    border-radius: var(--radius);
+    transform: translate(-50%, -46%);
+  }
+  .qv[data-open="true"] .qv__panel { transform: translate(-50%, -50%); }
+}
+.qv[data-open="true"] .qv__panel { transform: translateY(0); opacity: 1; }
+@media (min-width: 860px) {
+  .qv[data-open="true"] .qv__panel { transform: translate(-50%, -50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .qv__scrim, .qv__panel { transition: none; }
+}
+
+.qv__close {
+  position: absolute;
+  top: 12px; right: 12px;
+  z-index: 2;
+  width: var(--tap); height: var(--tap);
+  display: grid; place-items: center;
+  color: var(--on-dark);
+  background: var(--ink-raise);
+  border: 1px solid var(--line-control);
+  border-radius: 50%;
+}
+.qv__close:hover { border-color: var(--orange); color: var(--orange); }
+
+.qv__grid {
+  display: grid;
+  gap: clamp(20px, 3vw, 44px);
+}
+@media (min-width: 860px) {
+  .qv__grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+  /* Only the buy column runs under the close button, so only it pays for it.
+     Padding the whole grid stole 52px from every element on a phone. */
+  .qv__buy { padding-right: 52px; }
+}
+.qv__grid > * { min-width: 0; }
+
+/* --- Media --------------------------------------------------------------- */
+.qv__stage {
+  aspect-ratio: 4 / 3;
+  display: grid;
+  place-items: center;
+  padding: 6%;
+  border: 1px solid var(--ink-line);
+  border-radius: var(--radius);
+  background:
+    radial-gradient(62% 58% at 50% 54%, rgba(230, 138, 24, .11) 0%, rgba(230, 138, 24, 0) 70%),
+    radial-gradient(78% 70% at 50% 50%, #1f1f1f 0%, #131313 100%);
+}
+.qv__stage img { width: 100%; height: 100%; object-fit: contain; }
+
+.qv__thumbs { display: flex; gap: var(--space-2); margin-top: var(--space-2); }
+.qv__thumb {
+  width: 70px; height: 70px;
+  flex: none;
+  padding: 6px;
+  border: 1px solid var(--line-control);
+  border-radius: var(--radius);
+  background: radial-gradient(75% 70% at 50% 50%, #242424 0%, #161616 100%);
+}
+.qv__thumb img { width: 100%; height: 100%; object-fit: contain; }
+.qv__thumb[aria-pressed="true"] { border-color: var(--orange); box-shadow: inset 0 0 0 1px var(--orange); }
+
+/* --- Buy column ---------------------------------------------------------- */
+.qv-badges { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-3); }
+.qv-badge {
+  padding: 5px 10px;
+  font-family: var(--font-mono);
+  font-size: var(--label-size-xs);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--orange);
+  border-radius: 2px;
+}
+.qv-badge--wait { color: var(--on-dark); background: var(--ink-raise); border: 1px solid var(--line-control); }
+
+.qv__title {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+  line-height: 1.05;
+  letter-spacing: -.02em;
+}
+.qv__tagline {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--label-size);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--on-dark-dim);
+}
+.qv-stars { margin: 0 0 var(--space-3); font-size: 14px; color: var(--on-dark); }
+.qv-stars span[aria-hidden] { color: var(--orange); letter-spacing: 1px; }
+.qv-stars__src { color: var(--on-dark-dim); }
+
+.qv__price {
+  display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--space-3);
+  margin: 0 0 6px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: clamp(1.4rem, 2.2vw, 1.8rem);
+  color: var(--orange);
+}
+.qv__tax {
+  font-size: var(--label-size);
+  font-weight: 400;
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--on-dark-dim);
+}
+.qv__lead { margin: 0 0 var(--space-4); font-size: 14px; color: var(--on-dark-dim); }
+
+/* --- Options ------------------------------------------------------------- */
+.qv__opts { display: grid; gap: var(--space-4); margin-bottom: var(--space-4); }
+.qv-opt__head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+.qv-opt__label {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--label-size-xs);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--on-dark-dim);
+}
+.qv-opt__req { color: var(--orange); }
+.qv-opt__chosen { margin: 0; font-size: 14px; font-weight: 700; text-align: right; }
+.qv-opt__note { margin: var(--space-2) 0 0; font-size: 13px; line-height: 1.5; color: var(--on-dark-dim); }
+
+.qv-choices { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.qv-choice {
+  flex: 1 1 auto;
+  min-width: 104px;
+  min-height: var(--tap);
+  display: grid; gap: 2px;
+  padding: 9px 14px;
+  text-align: left;
+  color: var(--on-dark);
+  background: var(--ink-raise);
+  border: 1px solid var(--line-control);
+  border-radius: var(--radius);
+  transition: border-color var(--dur-fast) var(--ease),
+              background-color var(--dur-fast) var(--ease),
+              color var(--dur-fast) var(--ease);
+}
+.qv-choice b { font-size: 15px; font-weight: 700; }
+.qv-choice span { font-family: var(--font-mono); font-size: var(--label-size-xs); color: var(--on-dark-dim); }
+.qv-choice:hover { border-color: var(--orange); }
+.qv-choice[aria-checked="true"] { background: var(--orange); border-color: var(--orange); color: var(--ink); }
+.qv-choice[aria-checked="true"] span { color: rgba(16, 16, 16, .78); }
+
+/* The swatch grid. 44px targets, so the palette is usable with a thumb. */
+.qv-sw-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.qv-sw {
+  width: var(--tap); height: var(--tap);
+  flex: none;
+  padding: 5px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 50%;
+}
+/* The colour is the inner disk, so the selected ring never sits on top of it
+   and change what the visitor thinks they picked. */
+.qv-sw::before {
+  content: "";
+  display: block;
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  background: var(--sw);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .22);
+}
+.qv-sw:hover { border-color: var(--line-control); }
+.qv-sw[aria-checked="true"] { border-color: var(--orange); border-width: 2px; padding: 4px; }
+
+.qv-opt--ask .qv-opt__ask {
+  margin: 0;
+  padding: 12px 14px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--on-dark-dim);
+  background: var(--ink-raise);
+  border: 1px dashed var(--line-control);
+  border-radius: var(--radius);
+}
+/* Inline links inside the sheet still owe 44px of hit area. The padding
+   buys it and the negative margin gives the layout back, so the sentence
+   reads as a sentence. */
+.qv-opt__ask a,
+.qv__more a {
+  display: inline-block;
+  padding: 13px 6px;
+  margin: -13px -6px;
+  color: var(--orange);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.qv-opt__text {
+  width: 100%;
+  min-height: var(--tap);
+  padding: 11px 14px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--on-dark);
+  background: var(--ink-raise);
+  border: 1px solid var(--line-control);
+  border-radius: var(--radius);
+}
+.qv-opt__text:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+
+/* --- Act ----------------------------------------------------------------- */
+.qv__act { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+.qty--qv .qty__btn { width: var(--tap); height: var(--tap); }
+.qv__add { flex: 1 1 180px; }
+.qv__err { margin: var(--space-2) 0 0; min-height: 1.2em; font-size: 14px; color: var(--orange-hi); }
+.qv__more { margin: var(--space-3) 0 0; font-size: 14px; }
+
+
+/* --- Long copy ----------------------------------------------------------- */
+.qv__body {
+  margin-top: clamp(26px, 3.4vw, 44px);
+  padding-top: clamp(22px, 3vw, 34px);
+  border-top: 1px solid var(--ink-line);
+  columns: 1;
+}
+@media (min-width: 860px) { .qv__body { columns: 2; column-gap: clamp(28px, 4vw, 56px); } }
+.qv__body > * { break-inside: avoid; }
+
+.qv__pitch { margin: 0 0 1em; font-size: 15px; line-height: 1.65; color: var(--on-dark-dim); }
+.qv-sec { margin: 0 0 var(--space-4); }
+.qv-sec p { margin: 0 0 .7em; font-size: 15px; line-height: 1.6; color: var(--on-dark-dim); }
+.qv-sec__title { margin: 0 0 6px; font-size: 16px; font-weight: 700; color: var(--on-dark); }
+.qv-sec__lt {
+  margin: 0 0 8px !important;
+  font-family: var(--font-mono);
+  font-size: var(--label-size-xs);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--orange) !important;
+}
+.qv-sec__foot { font-style: italic; }
+.qv-list { margin: 0 0 .8em; padding-left: 18px; }
+.qv-list li { margin-bottom: 5px; font-size: 15px; line-height: 1.55; color: var(--on-dark-dim); }
+
+/* Their own instruction, carried as prominently as they carry it. */
+.qv-warn {
+  margin: 0 0 var(--space-4);
+  padding: 13px 16px;
+  background: var(--ink-raise);
+  border: 1px solid var(--line-control);
+  border-left: 3px solid var(--orange);
+  border-radius: var(--radius);
+}
+.qv-warn__t {
+  margin: 0 0 4px !important;
+  font-family: var(--font-mono);
+  font-size: var(--label-size-xs);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--orange) !important;
+}
+.qv-warn p { margin: 0; font-size: 14px; line-height: 1.55; color: var(--on-dark); }
+
+.qv-fine { margin: 0 0 var(--space-4); border-top: 1px solid var(--ink-line); }
+.qv-fine details { border-bottom: 1px solid var(--ink-line); }
+.qv-fine summary {
+  padding: 13px 0;
+  min-height: var(--tap);
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.qv-fine summary::marker { color: var(--orange); }
+.qv-fine p { margin: 0 0 14px; font-size: 14px; line-height: 1.6; color: var(--on-dark-dim); }
+.qv-note { margin: 0 0 .7em; font-size: 13px; line-height: 1.6; color: var(--on-dark-dim); }
+
+/* --- Product card, as a trigger -----------------------------------------
+ * The photo and the name are buttons now: both are what people press when
+ * they want to know more about one of ten near-identical bats. Button
+ * defaults are reset rather than the element changed, so the reveal curtain
+ * and the pointer-follow lift still apply exactly as before.
+ */
+button.product-card__media {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  cursor: pointer;
+}
+.product-card__peek {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  z-index: 3;
+  padding: 11px 12px;
+  font-family: var(--font-mono);
+  font-size: var(--label-size-xs);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--on-dark);
+  background: rgba(16, 16, 16, .86);
+  backdrop-filter: blur(6px);
+  border-top: 1px solid var(--ink-line);
+  transform: translateY(101%);
+  transition: transform var(--dur-base) var(--ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  .product-card:hover .product-card__peek,
+  .product-card__media:focus-visible .product-card__peek { transform: none; }
+}
+/* No hover on a touch screen, so the affordance has to be standing there. */
+@media (hover: none) {
+  .product-card__peek { transform: none; background: rgba(16, 16, 16, .7); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .product-card__peek { transition: none; }
+}
+
+/* The name is a button now, so it has to clear the 44px hit area — as text it
+   is only 20px tall. The padding does that and the heading's negative margins
+   give the space straight back, so the card is laid out exactly as before. */
+.product-card__name { margin: -12px 0 -2px; }
+.product-card__link {
+  display: block;
+  width: 100%;
+  padding: 12px 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.product-card__link:hover { color: var(--orange); text-decoration: underline; text-underline-offset: 3px; }
+.section--cream .product-card__link:hover { color: var(--accent-ink); }
+
+/* The chosen options, under the name in the drawer. */
+.cart-line__spec {
+  margin: 2px 0 0;
+  font-family: var(--font-mono);
+  font-size: var(--label-size-xs);
+  letter-spacing: .04em;
+  color: var(--on-dark-dim);
+}
+
+/* Their own safety instruction, carried on the landing page as prominently
+   as they carry it on every product page. */
+.note-strip {
+  display: grid;
+  gap: 4px;
+  max-width: 68ch;
+  margin: 0 0 clamp(32px, 4vw, 52px);
+  padding: 14px 18px;
+  background: var(--ink-raise);
+  border: 1px solid var(--ink-line);
+  border-left: 3px solid var(--orange);
+  border-radius: var(--radius);
+}
+.section--cream .note-strip { background: var(--cream-2); border-color: var(--cream-line); border-left-color: var(--accent-ink); }
+.note-strip__title {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--label-size-xs);
+  letter-spacing: var(--label-track);
+  text-transform: uppercase;
+  color: var(--orange);
+}
+.section--cream .note-strip__title { color: var(--accent-ink); }
+.note-strip__text { margin: 0; font-size: 15px; line-height: 1.55; color: var(--on-dark); }
+.section--cream .note-strip__text { color: var(--on-light); }
